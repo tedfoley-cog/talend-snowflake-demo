@@ -18,14 +18,18 @@ logger = logging.getLogger("etl")
 
 
 def run(session: Session, config: dict) -> int:
-    recon_date = config.get("recon_date", "CURRENT_DATE()")
+    recon_date = config.get("recon_date")
     tolerance = config.get("match_tolerance", 0.01)
+
+    date_expr = (
+        f"TO_DATE('{recon_date}', 'YYYY-MM-DD')" if recon_date else "CURRENT_DATE()"
+    )
 
     df_payments = session.sql(f"""
         SELECT PAYMENT_ID, LOAN_ID, CUSTOMER_ID, PAYMENT_AMOUNT,
                PAYMENT_DATE, PAYMENT_METHOD, REFERENCE_NUM
         FROM INCOMING_PAYMENTS
-        WHERE PAYMENT_DATE = TO_DATE('{recon_date}', 'YYYY-MM-DD')
+        WHERE PAYMENT_DATE = {date_expr}
           AND RECONCILED = 'N'
     """)
 
@@ -33,7 +37,7 @@ def run(session: Session, config: dict) -> int:
         SELECT LOAN_ID, CUSTOMER_ID, OUTSTANDING_BALANCE,
                MONTHLY_PAYMENT_DUE, DUE_DATE, DAYS_PAST_DUE
         FROM LOAN_BALANCE
-        WHERE DUE_DATE <= TO_DATE('{recon_date}', 'YYYY-MM-DD')
+        WHERE DUE_DATE <= {date_expr}
     """)
 
     # tMap: left join on LOAN_ID

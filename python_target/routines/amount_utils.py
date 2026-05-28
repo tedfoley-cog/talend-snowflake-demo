@@ -4,7 +4,6 @@ Currency and amount utilities for financial ETL processing.
 Used by: loan_application_ingest, loan_risk_scoring, payment_match,
          payment_discrepancy, payment_settlement, cfpb_extract, occ_compliance_report
 """
-import locale
 import math
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -16,10 +15,6 @@ def round_to_decimal(value: float, places: int) -> float:
 
 
 def format_currency(amount: float) -> str:
-    try:
-        locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-    except locale.Error:
-        pass
     return f"${amount:,.2f}"
 
 

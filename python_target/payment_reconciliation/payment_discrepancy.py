@@ -8,6 +8,7 @@ Custom routines: AmountUtils
 """
 import logging
 
+import pandas as pd
 from snowflake.snowpark import Session
 
 from python_target.routines.amount_utils import format_currency
@@ -30,9 +31,9 @@ def run(session: Session, config: dict) -> None:
 
     # tMap_1: format currency for report
     pdf = df.to_pandas()
-    pdf["PAYMENT_AMOUNT"] = pdf["PAYMENT_AMOUNT"].apply(format_currency)
-    pdf["AMOUNT_DUE"] = pdf["AMOUNT_DUE"].apply(format_currency)
-    pdf["VARIANCE"] = pdf["VARIANCE"].apply(format_currency)
+    pdf["PAYMENT_AMOUNT"] = pdf["PAYMENT_AMOUNT"].apply(lambda x: format_currency(x) if pd.notna(x) else "")
+    pdf["AMOUNT_DUE"] = pdf["AMOUNT_DUE"].apply(lambda x: format_currency(x) if pd.notna(x) else "")
+    pdf["VARIANCE"] = pdf["VARIANCE"].apply(lambda x: format_currency(x) if pd.notna(x) else "")
     pdf = pdf.rename(columns={"MATCH_STATUS": "DISCREPANCY_TYPE"})
     pdf["REPORT_DATE"] = report_date
 

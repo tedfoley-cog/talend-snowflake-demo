@@ -61,8 +61,14 @@ def run(session: Session, config: dict) -> None:
         F.lit(effective_date) if effective_date else F.current_date()
     )
 
+    # Offset seq8() by the current max SK to ensure cross-run uniqueness
+    max_sk_row = session.sql(
+        f"SELECT COALESCE(MAX(DIM_CUSTOMER_SK), 0) AS MAX_SK FROM {tgt_schema}.DIM_CUSTOMER"
+    ).collect()
+    sk_offset = max_sk_row[0]["MAX_SK"] if max_sk_row else 0
+
     df_scd = df.select(
-        F.seq8().alias("DIM_CUSTOMER_SK"),
+        (F.seq8() + F.lit(sk_offset) + F.lit(1)).alias("DIM_CUSTOMER_SK"),
         F.col("CUSTOMER_ID"),
         F.col("FULL_NAME"),
         F.col("SSN_MASKED"),

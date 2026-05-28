@@ -30,10 +30,10 @@ def run(session: Session, config: dict) -> int:
         LEFT JOIN {config.get('tgt_schema', 'DIM')}.DIM_CUSTOMER d
             ON s.CUSTOMER_ID = d.CUSTOMER_ID AND d.IS_CURRENT = 1
         WHERE d.CUSTOMER_ID IS NULL
-           OR s.FULL_NAME != d.FULL_NAME
-           OR s.EMAIL != d.EMAIL
-           OR s.ACCOUNT_STATUS != d.ACCOUNT_STATUS
-           OR s.CREDIT_SCORE != d.CREDIT_SCORE
+           OR NOT EQUAL_NULL(s.FULL_NAME, d.FULL_NAME)
+           OR NOT EQUAL_NULL(s.EMAIL, d.EMAIL)
+           OR NOT EQUAL_NULL(s.ACCOUNT_STATUS, d.ACCOUNT_STATUS)
+           OR NOT EQUAL_NULL(s.CREDIT_SCORE, d.CREDIT_SCORE)
     """)
 
     # Expire existing current records for changed customers
@@ -47,10 +47,10 @@ def run(session: Session, config: dict) -> int:
               FROM {config.get('src_schema', 'RAW')}.STG_CUSTOMER s
               JOIN {config.get('tgt_schema', 'DIM')}.DIM_CUSTOMER d
                   ON s.CUSTOMER_ID = d.CUSTOMER_ID AND d.IS_CURRENT = 1
-              WHERE s.FULL_NAME != d.FULL_NAME
-                 OR s.EMAIL != d.EMAIL
-                 OR s.ACCOUNT_STATUS != d.ACCOUNT_STATUS
-                 OR s.CREDIT_SCORE != d.CREDIT_SCORE
+              WHERE NOT EQUAL_NULL(s.FULL_NAME, d.FULL_NAME)
+                 OR NOT EQUAL_NULL(s.EMAIL, d.EMAIL)
+                 OR NOT EQUAL_NULL(s.ACCOUNT_STATUS, d.ACCOUNT_STATUS)
+                 OR NOT EQUAL_NULL(s.CREDIT_SCORE, d.CREDIT_SCORE)
           )
     """).collect()
 

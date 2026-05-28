@@ -58,7 +58,7 @@ def run(session: Session, config: dict) -> int:
             WHERE MATCH_STATUS = 'MATCHED' AND SETTLEMENT_STATUS = 'SETTLED'
         ) src
         ON tgt.PAYMENT_ID = src.PAYMENT_ID
-        WHEN MATCHED THEN UPDATE SET
+        WHEN MATCHED AND tgt.RECONCILED != 'Y' THEN UPDATE SET
             tgt.RECONCILED = 'Y',
             tgt.RECONCILED_DATE = CURRENT_TIMESTAMP()
     """).collect()

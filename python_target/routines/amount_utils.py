@@ -2,7 +2,6 @@
 
 Currency rounding, formatting, and amortization calculations.
 """
-import locale
 import math
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -13,11 +12,7 @@ def round_to_decimal(value: float, places: int) -> float:
 
 
 def format_currency(amount: float) -> str:
-    try:
-        locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-        return locale.currency(amount, grouping=True)
-    except (locale.Error, ValueError):
-        return f"${amount:,.2f}"
+    return f"${amount:,.2f}"
 
 
 def calculate_monthly_payment(

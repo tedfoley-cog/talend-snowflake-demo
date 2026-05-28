@@ -32,16 +32,28 @@ def run(session: Session, config: dict) -> None:
     """)
 
     # tMap_1 var table: risk calculations via Snowpark functions
-    # DTI ratio
+    # DTI ratio — amortized monthly payment * 12 to annualize, matching
+    # the original Talend expression:
+    #   (AmountUtils.calculateMonthlyPayment(REQUESTED_AMOUNT, INTEREST_RATE, TERM_MONTHS) * 12
+    #    + EXISTING_DEBT) / ANNUAL_INCOME
+    monthly_rate = F.col("INTEREST_RATE") / F.lit(100.0) / F.lit(12.0)
+    n = F.col("TERM_MONTHS")
+    factor = F.pow(F.lit(1) + monthly_rate, n)
+    amortized_monthly = F.when(
+        F.col("INTEREST_RATE") > 0,
+        F.col("REQUESTED_AMOUNT") * (monthly_rate * factor) / (factor - F.lit(1)),
+    ).otherwise(
+        F.col("REQUESTED_AMOUNT") / n,
+    )
+    annual_payment = amortized_monthly * F.lit(12)
+
     df = df.with_column(
         "DTI_RATIO",
         F.when(
             F.col("ANNUAL_INCOME") > 0,
             F.round(
-                (
-                    (F.col("REQUESTED_AMOUNT") * F.col("INTEREST_RATE") / F.lit(100.0) / F.lit(12.0))
-                    + F.coalesce(F.col("EXISTING_DEBT"), F.lit(0))
-                ) / F.col("ANNUAL_INCOME"),
+                (annual_payment + F.coalesce(F.col("EXISTING_DEBT"), F.lit(0)))
+                / F.col("ANNUAL_INCOME"),
                 4,
             ),
         ).otherwise(F.lit(999)),

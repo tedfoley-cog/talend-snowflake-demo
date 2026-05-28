@@ -49,7 +49,8 @@ def run(session: Session, config: dict) -> None:
     tol = F.lit(match_tolerance)
     df = df.with_column(
         "MATCH_STATUS",
-        F.when(F.col("VARIANCE") <= tol, F.lit("MATCHED"))
+        F.when(F.col("MONTHLY_PAYMENT_DUE").is_null(), F.lit("UNMATCHED"))
+        .when(F.col("VARIANCE") <= tol, F.lit("MATCHED"))
         .when(F.col("PAYMENT_AMOUNT") > F.col("MONTHLY_PAYMENT_DUE") + tol, F.lit("OVERPAYMENT"))
         .otherwise(F.lit("UNDERPAYMENT")),
     )

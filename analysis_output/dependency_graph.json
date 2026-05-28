@@ -1,0 +1,392 @@
+{
+  "nodes": [
+    {
+      "id": "customer_accounts/customer_dimension_load",
+      "domain": "customer_accounts",
+      "job_name": "customer_dimension_load",
+      "reads_from": [
+        "DIM",
+        "RAW"
+      ],
+      "writes_to": [
+        "DIM_CUSTOMER"
+      ],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "DateFormatUtils"
+      ]
+    },
+    {
+      "id": "customer_accounts/customer_extract",
+      "domain": "customer_accounts",
+      "job_name": "customer_extract",
+      "reads_from": [
+        "CUSTOMER_MASTER"
+      ],
+      "writes_to": [
+        "STG_CUSTOMER"
+      ],
+      "routines": [
+        "DataOperation",
+        "Numeric",
+        "StringHandling",
+        "TalendDate",
+        "TalendString",
+        "DateFormatUtils",
+        "AccountValidator"
+      ]
+    },
+    {
+      "id": "customer_accounts/customer_validation",
+      "domain": "customer_accounts",
+      "job_name": "customer_validation",
+      "reads_from": [
+        "CUSTOMER_MASTER"
+      ],
+      "writes_to": [
+        "CUSTOMER_VALIDATION_RESULTS"
+      ],
+      "routines": [
+        "DataOperation",
+        "Numeric",
+        "StringHandling",
+        "TalendDate",
+        "AccountValidator"
+      ]
+    },
+    {
+      "id": "regulatory_reporting/cfpb_extract",
+      "domain": "regulatory_reporting",
+      "job_name": "cfpb_extract",
+      "reads_from": [
+        "ADVERSE_ACTIONS",
+        "CUSTOMER_MASTER",
+        "LOAN_APPLICATION",
+        "LOAN_RISK_SCORES"
+      ],
+      "writes_to": [],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils",
+        "DateFormatUtils"
+      ]
+    },
+    {
+      "id": "regulatory_reporting/occ_compliance_report",
+      "domain": "regulatory_reporting",
+      "job_name": "occ_compliance_report",
+      "reads_from": [
+        "LOAN_PORTFOLIO_VIEW"
+      ],
+      "writes_to": [
+        "OCC_COMPLIANCE_REPORT"
+      ],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    },
+    {
+      "id": "regulatory_reporting/regulatory_archive",
+      "domain": "regulatory_reporting",
+      "job_name": "regulatory_archive",
+      "reads_from": [
+        "COMPLIANCE_REPORTS"
+      ],
+      "writes_to": [],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "DateFormatUtils"
+      ]
+    },
+    {
+      "id": "loan_processing/loan_application_ingest",
+      "domain": "loan_processing",
+      "job_name": "loan_application_ingest",
+      "reads_from": [],
+      "writes_to": [
+        "STG_LOAN_APPLICATION"
+      ],
+      "routines": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    },
+    {
+      "id": "loan_processing/loan_risk_scoring",
+      "domain": "loan_processing",
+      "job_name": "loan_risk_scoring",
+      "reads_from": [
+        "CUSTOMER_MASTER",
+        "LOAN_APPLICATION"
+      ],
+      "writes_to": [
+        "LOAN_RISK_SCORES"
+      ],
+      "routines": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    },
+    {
+      "id": "loan_processing/loan_status_update",
+      "domain": "loan_processing",
+      "job_name": "loan_status_update",
+      "reads_from": [
+        "LOAN_RISK_SCORES"
+      ],
+      "writes_to": [
+        "LOAN_APPLICATION"
+      ],
+      "routines": [
+        "DataOperation",
+        "TalendDate"
+      ]
+    },
+    {
+      "id": "data_quality/address_standardization",
+      "domain": "data_quality",
+      "job_name": "address_standardization",
+      "reads_from": [],
+      "writes_to": [
+        "STG_ADDRESS_STANDARDIZED"
+      ],
+      "routines": [
+        "DataOperation",
+        "StringHandling",
+        "TalendDate"
+      ]
+    },
+    {
+      "id": "data_quality/dedup_customer",
+      "domain": "data_quality",
+      "job_name": "dedup_customer",
+      "reads_from": [
+        "STG_CUSTOMER"
+      ],
+      "writes_to": [
+        "CUSTOMER_DEDUP_RESULTS"
+      ],
+      "routines": [
+        "DataOperation",
+        "StringHandling",
+        "TalendDate",
+        "AccountValidator"
+      ]
+    },
+    {
+      "id": "payment_reconciliation/payment_discrepancy",
+      "domain": "payment_reconciliation",
+      "job_name": "payment_discrepancy",
+      "reads_from": [
+        "PAYMENT_RECONCILIATION"
+      ],
+      "writes_to": [],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    },
+    {
+      "id": "payment_reconciliation/payment_match",
+      "domain": "payment_reconciliation",
+      "job_name": "payment_match",
+      "reads_from": [
+        "INCOMING_PAYMENTS",
+        "LOAN_BALANCE"
+      ],
+      "writes_to": [
+        "PAYMENT_RECONCILIATION"
+      ],
+      "routines": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    },
+    {
+      "id": "payment_reconciliation/payment_settlement",
+      "domain": "payment_reconciliation",
+      "job_name": "payment_settlement",
+      "reads_from": [
+        "PAYMENT_RECONCILIATION"
+      ],
+      "writes_to": [
+        "INCOMING_PAYMENTS",
+        "PAYMENT_SETTLEMENT"
+      ],
+      "routines": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "customer_accounts/customer_extract",
+      "to": "data_quality/dedup_customer",
+      "via_table": "STG_CUSTOMER",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "loan_processing/loan_risk_scoring",
+      "to": "regulatory_reporting/cfpb_extract",
+      "via_table": "LOAN_RISK_SCORES",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "loan_processing/loan_risk_scoring",
+      "to": "loan_processing/loan_status_update",
+      "via_table": "LOAN_RISK_SCORES",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "loan_processing/loan_status_update",
+      "to": "regulatory_reporting/cfpb_extract",
+      "via_table": "LOAN_APPLICATION",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "loan_processing/loan_status_update",
+      "to": "loan_processing/loan_risk_scoring",
+      "via_table": "LOAN_APPLICATION",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "payment_reconciliation/payment_match",
+      "to": "payment_reconciliation/payment_discrepancy",
+      "via_table": "PAYMENT_RECONCILIATION",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "payment_reconciliation/payment_match",
+      "to": "payment_reconciliation/payment_settlement",
+      "via_table": "PAYMENT_RECONCILIATION",
+      "relationship": "produces_for"
+    },
+    {
+      "from": "payment_reconciliation/payment_settlement",
+      "to": "payment_reconciliation/payment_match",
+      "via_table": "INCOMING_PAYMENTS",
+      "relationship": "produces_for"
+    }
+  ],
+  "shared_contexts": {
+    "tgt_schema": [
+      "customer_accounts/customer_dimension_load",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "loan_processing/loan_application_ingest",
+      "data_quality/address_standardization"
+    ],
+    "src_db_host": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation",
+      "regulatory_reporting/cfpb_extract",
+      "regulatory_reporting/occ_compliance_report",
+      "loan_processing/loan_risk_scoring",
+      "loan_processing/loan_status_update",
+      "data_quality/dedup_customer",
+      "payment_reconciliation/payment_match",
+      "payment_reconciliation/payment_settlement"
+    ],
+    "src_db_port": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation",
+      "loan_processing/loan_risk_scoring"
+    ],
+    "src_db_name": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation",
+      "loan_processing/loan_risk_scoring"
+    ],
+    "src_db_user": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation"
+    ],
+    "src_db_password": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation"
+    ],
+    "batch_date": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_extract",
+      "loan_processing/loan_status_update"
+    ],
+    "output_dir": [
+      "regulatory_reporting/cfpb_extract",
+      "payment_reconciliation/payment_discrepancy"
+    ],
+    "archive_dir": [
+      "regulatory_reporting/regulatory_archive",
+      "loan_processing/loan_application_ingest"
+    ],
+    "input_dir": [
+      "loan_processing/loan_application_ingest",
+      "data_quality/address_standardization"
+    ]
+  },
+  "custom_routine_usage": {
+    "DateFormatUtils": [
+      "customer_accounts/customer_dimension_load",
+      "customer_accounts/customer_extract",
+      "regulatory_reporting/cfpb_extract",
+      "regulatory_reporting/regulatory_archive"
+    ],
+    "AccountValidator": [
+      "customer_accounts/customer_extract",
+      "customer_accounts/customer_validation",
+      "data_quality/dedup_customer"
+    ],
+    "AmountUtils": [
+      "regulatory_reporting/cfpb_extract",
+      "regulatory_reporting/occ_compliance_report",
+      "loan_processing/loan_application_ingest",
+      "loan_processing/loan_risk_scoring",
+      "payment_reconciliation/payment_discrepancy",
+      "payment_reconciliation/payment_match",
+      "payment_reconciliation/payment_settlement"
+    ]
+  },
+  "summary": {
+    "total_jobs": 14,
+    "total_edges": 8,
+    "tables_referenced": [
+      "ADVERSE_ACTIONS",
+      "COMPLIANCE_REPORTS",
+      "CUSTOMER_DEDUP_RESULTS",
+      "CUSTOMER_MASTER",
+      "CUSTOMER_VALIDATION_RESULTS",
+      "DIM",
+      "DIM_CUSTOMER",
+      "INCOMING_PAYMENTS",
+      "LOAN_APPLICATION",
+      "LOAN_BALANCE",
+      "LOAN_PORTFOLIO_VIEW",
+      "LOAN_RISK_SCORES",
+      "OCC_COMPLIANCE_REPORT",
+      "PAYMENT_RECONCILIATION",
+      "PAYMENT_SETTLEMENT",
+      "RAW",
+      "STG_ADDRESS_STANDARDIZED",
+      "STG_CUSTOMER",
+      "STG_LOAN_APPLICATION"
+    ]
+  }
+}

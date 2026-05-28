@@ -10,7 +10,7 @@ jobs:
           python-version: "3.11"
       - run: pip install -r requirements.txt
       - name: Lint Python
-        run: ruff check scripts/
+        run: ruff check scripts/ python_target/
       - name: Validate XML well-formedness
         run: |
           sudo apt-get install -y -qq libxml2-utils

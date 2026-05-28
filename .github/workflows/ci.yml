@@ -1,0 +1,17 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Lint Python
+        run: ruff check scripts/
+      - name: Validate XML well-formedness
+        run: |
+          sudo apt-get install -y -qq libxml2-utils
+          find talend_jobs -name '*.xml' -o -name '*.item' | xargs xmllint --noout

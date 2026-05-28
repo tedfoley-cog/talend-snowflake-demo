@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMapper="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default" jobType="Standard">
+  <context confirmationNeeded="false" name="Default">
+    <contextParameter comment="Source schema" name="src_schema" prompt="src_schema?" promptNeeded="false" type="id_String" value="RAW"/>
+    <contextParameter comment="Target schema" name="tgt_schema" prompt="tgt_schema?" promptNeeded="false" type="id_String" value="DIM"/>
+    <contextParameter comment="SCD effective date" name="effective_date" prompt="effective_date?" promptNeeded="false" type="id_String" value=""/>
+  </context>
+  <parameters>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0" show="false"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_Y" value="0" show="false"/>
+    <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
+    <elementParameter field="CHECK" name="STATANDLOG_USE_PROJECT_SETTINGS" value="true" show="false"/>
+    <routinesParameter id="_dM1aBcDeFg" name="DataOperation"/>
+    <routinesParameter id="_dM2aBcDeFg" name="TalendDate"/>
+    <routinesParameter id="_dM3aBcDeFg" name="DateFormatUtils"/>
+  </parameters>
+  <node componentName="tDBInput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="96" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;SELECT &#xA;  s.CUSTOMER_ID, s.FULL_NAME, s.SSN_MASKED, s.EMAIL, &#xA;  s.PHONE_PRIMARY, s.FULL_ADDRESS, s.ACCOUNT_STATUS, &#xA;  s.CREDIT_SCORE, s.CUSTOMER_SINCE, s.ETL_LOAD_TS&#xA;FROM RAW.STG_CUSTOMER s&#xA;LEFT JOIN DIM.DIM_CUSTOMER d ON s.CUSTOMER_ID = d.CUSTOMER_ID AND d.IS_CURRENT = 1&#xA;WHERE d.CUSTOMER_ID IS NULL &#xA;   OR s.FULL_NAME != d.FULL_NAME &#xA;   OR s.EMAIL != d.EMAIL &#xA;   OR s.ACCOUNT_STATUS != d.ACCOUNT_STATUS &#xA;   OR s.CREDIT_SCORE != d.CREDIT_SCORE&quot;"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Changed/New Customers&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="tDBInput_1">
+      <column comment="" key="true" length="12" name="CUSTOMER_ID" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="101" name="FULL_NAME" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="11" name="SSN_MASKED" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="100" name="EMAIL" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="PHONE_PRIMARY" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="300" name="FULL_ADDRESS" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="ACCOUNT_STATUS" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="5" name="CREDIT_SCORE" nullable="true" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="CUSTOMER_SINCE" nullable="true" pattern="&quot;yyyy-MM-dd&quot;" sourceType="DATE" type="id_Date" usefulColumn="true"/>
+      <column comment="" key="false" length="19" name="ETL_LOAD_TS" nullable="false" pattern="&quot;yyyy-MM-dd HH:mm:ss&quot;" sourceType="TIMESTAMP" type="id_Date" usefulColumn="true"/>
+    </metadata>
+  </node>
+  <node componentName="tMap" componentVersion="2.1" offsetLabelX="0" offsetLabelY="0" posX="320" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tMap_1" show="false"/>
+    <elementParameter field="EXTERNAL" name="MAP" value=""/>
+    <elementParameter field="TEXT" name="ROWS_BUFFER_SIZE" value="2000000"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="scd2_output">
+      <column comment="" key="false" length="38" name="DIM_CUSTOMER_SK" nullable="false" sourceType="NUMBER" type="id_Long" usefulColumn="true"/>
+      <column comment="" key="true" length="12" name="CUSTOMER_ID" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="101" name="FULL_NAME" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="11" name="SSN_MASKED" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="100" name="EMAIL" nullable="true" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="ACCOUNT_STATUS" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="5" name="CREDIT_SCORE" nullable="true" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="EFF_START_DATE" nullable="false" pattern="&quot;yyyy-MM-dd&quot;" sourceType="DATE" type="id_Date" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="EFF_END_DATE" nullable="true" pattern="&quot;yyyy-MM-dd&quot;" sourceType="DATE" type="id_Date" usefulColumn="true"/>
+      <column comment="" key="false" length="1" name="IS_CURRENT" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+    </metadata>
+    <nodeData xsi:type="TalendMapper:MapperData">
+      <uiProperties shellMaximized="true"/>
+      <varTables sizeState="INTERMEDIATE" name="Var" minimized="true"/>
+      <outputTables sizeState="INTERMEDIATE" name="scd2_output">
+        <mapperTableEntries name="DIM_CUSTOMER_SK" expression="Numeric.sequence(&quot;customer_sk&quot;, 1, 1)" type="id_Long" nullable="false"/>
+        <mapperTableEntries name="CUSTOMER_ID" expression="row1.CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="FULL_NAME" expression="row1.FULL_NAME" type="id_String" nullable="false"/>
+        <mapperTableEntries name="SSN_MASKED" expression="row1.SSN_MASKED" type="id_String" nullable="true"/>
+        <mapperTableEntries name="EMAIL" expression="row1.EMAIL" type="id_String" nullable="true"/>
+        <mapperTableEntries name="ACCOUNT_STATUS" expression="row1.ACCOUNT_STATUS" type="id_String" nullable="false"/>
+        <mapperTableEntries name="CREDIT_SCORE" expression="row1.CREDIT_SCORE" type="id_Integer" nullable="true"/>
+        <mapperTableEntries name="EFF_START_DATE" expression="DateFormatUtils.parseDate(context.effective_date != null &amp;&amp; !context.effective_date.isEmpty() ? context.effective_date : TalendDate.getDate(&quot;yyyy-MM-dd&quot;), &quot;yyyy-MM-dd&quot;)" type="id_Date" nullable="false"/>
+        <mapperTableEntries name="EFF_END_DATE" expression="null" type="id_Date" nullable="true"/>
+        <mapperTableEntries name="IS_CURRENT" expression="1" type="id_Integer" nullable="false"/>
+      </outputTables>
+      <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
+        <mapperTableEntries name="CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="FULL_NAME" type="id_String" nullable="false"/>
+        <mapperTableEntries name="SSN_MASKED" type="id_String" nullable="true"/>
+        <mapperTableEntries name="EMAIL" type="id_String" nullable="true"/>
+        <mapperTableEntries name="PHONE_PRIMARY" type="id_String" nullable="true"/>
+        <mapperTableEntries name="FULL_ADDRESS" type="id_String" nullable="true"/>
+        <mapperTableEntries name="ACCOUNT_STATUS" type="id_String" nullable="false"/>
+        <mapperTableEntries name="CREDIT_SCORE" type="id_Integer" nullable="true"/>
+        <mapperTableEntries name="CUSTOMER_SINCE" type="id_Date" nullable="true"/>
+        <mapperTableEntries name="ETL_LOAD_TS" type="id_Date" nullable="false"/>
+      </inputTables>
+    </nodeData>
+  </node>
+  <node componentName="tDBOutput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="544" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBOutput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="DBTABLE" name="TABLE" value="&quot;DIM_CUSTOMER&quot;"/>
+    <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;SCD Type 2 Insert&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+  </node>
+  <connection connectorName="FLOW" label="row1" lineStyle="0" metaname="tDBInput_1" offsetLabelX="0" offsetLabelY="0" source="tDBInput_1" target="tMap_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="row1" show="false"/>
+  </connection>
+  <connection connectorName="FLOW" label="scd2_output" lineStyle="0" metaname="scd2_output" offsetLabelX="0" offsetLabelY="0" source="tMap_1" target="tDBOutput_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="scd2_output" show="false"/>
+  </connection>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="92;131;150" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="207;226;236"/>
+  </subjob>
+</talendfile:ProcessType>

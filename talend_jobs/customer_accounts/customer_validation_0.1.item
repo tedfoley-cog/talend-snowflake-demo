@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMapper="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default" jobType="Standard">
+  <context confirmationNeeded="false" name="Default">
+    <contextParameter comment="Source database host" name="src_db_host" prompt="src_db_host?" promptNeeded="false" type="id_String" value="db-source-prod.internal"/>
+    <contextParameter comment="Source database port" name="src_db_port" prompt="src_db_port?" promptNeeded="false" type="id_String" value="1521"/>
+    <contextParameter comment="Source database name" name="src_db_name" prompt="src_db_name?" promptNeeded="false" type="id_String" value="CUSTDB"/>
+    <contextParameter comment="Source database user" name="src_db_user" prompt="src_db_user?" promptNeeded="false" type="id_String" value="etl_reader"/>
+    <contextParameter comment="Source database password" name="src_db_password" prompt="src_db_password?" promptNeeded="false" type="id_Password" value="enc:system.encryption.key.v1:aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789"/>
+    <contextParameter comment="Validation error threshold" name="error_threshold" prompt="error_threshold?" promptNeeded="false" type="id_Integer" value="100"/>
+  </context>
+  <parameters>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0" show="false"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_Y" value="0" show="false"/>
+    <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
+    <elementParameter field="CHECK" name="IMPLICIT_TCONTEXTLOAD" value="false"/>
+    <elementParameter field="CHECK" name="STATANDLOG_USE_PROJECT_SETTINGS" value="true" show="false"/>
+    <elementParameter field="CHECK" name="IMPLICITCONTEXT_USE_PROJECT_SETTINGS" value="true" show="false"/>
+    <routinesParameter id="_cV1aBcDeFg" name="DataOperation"/>
+    <routinesParameter id="_cV2aBcDeFg" name="Numeric"/>
+    <routinesParameter id="_cV3aBcDeFg" name="StringHandling"/>
+    <routinesParameter id="_cV4aBcDeFg" name="TalendDate"/>
+    <routinesParameter id="_cV5aBcDeFg" name="AccountValidator"/>
+  </parameters>
+  <node componentName="tDBInput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="96" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ORACLE_12"/>
+    <elementParameter field="TEXT" name="HOST" value="context.src_db_host"/>
+    <elementParameter field="TEXT" name="PORT" value="context.src_db_port"/>
+    <elementParameter field="TEXT" name="DBNAME" value="context.src_db_name"/>
+    <elementParameter field="TEXT" name="USER" value="context.src_db_user"/>
+    <elementParameter field="PASSWORD" name="PASS" value="context.src_db_password"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;SELECT CUSTOMER_ID, SSN, EMAIL, PHONE_PRIMARY, STATE_CODE, ZIP_CODE, ACCOUNT_STATUS FROM CUSTOMER_MASTER WHERE ACCOUNT_STATUS = 'ACTIVE'&quot;"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Active Customers&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" label="CUSTOMER_MASTER" name="tDBInput_1">
+      <column comment="" key="true" length="12" name="CUSTOMER_ID" nullable="false" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="11" name="SSN" nullable="true" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="100" name="EMAIL" nullable="true" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="PHONE_PRIMARY" nullable="true" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="2" name="STATE_CODE" nullable="true" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="ZIP_CODE" nullable="true" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="ACCOUNT_STATUS" nullable="false" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+    </metadata>
+  </node>
+  <node componentName="tMap" componentVersion="2.1" offsetLabelX="0" offsetLabelY="0" posX="320" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tMap_1" show="false"/>
+    <elementParameter field="EXTERNAL" name="MAP" value=""/>
+    <elementParameter field="CHECK" name="DIE_ON_ERROR" value="false" show="false"/>
+    <elementParameter field="TEXT" name="ROWS_BUFFER_SIZE" value="2000000"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="valid_records">
+      <column comment="" key="true" length="12" name="CUSTOMER_ID" nullable="false" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="1" name="SSN_VALID" nullable="false" pattern="" precision="0" sourceType="" type="id_Boolean" usefulColumn="true"/>
+      <column comment="" key="false" length="1" name="EMAIL_VALID" nullable="false" pattern="" precision="0" sourceType="" type="id_Boolean" usefulColumn="true"/>
+      <column comment="" key="false" length="1" name="PHONE_VALID" nullable="false" pattern="" precision="0" sourceType="" type="id_Boolean" usefulColumn="true"/>
+      <column comment="" key="false" length="1" name="ZIP_VALID" nullable="false" pattern="" precision="0" sourceType="" type="id_Boolean" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="VALIDATION_STATUS" nullable="false" pattern="" precision="0" sourceType="" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="19" name="VALIDATED_AT" nullable="false" pattern="&quot;yyyy-MM-dd HH:mm:ss&quot;" precision="0" sourceType="" type="id_Date" usefulColumn="true"/>
+    </metadata>
+    <metadata connector="FLOW" name="invalid_records">
+      <column comment="" key="true" length="12" name="CUSTOMER_ID" nullable="false" pattern="" precision="0" sourceType="VARCHAR2" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="500" name="VALIDATION_ERRORS" nullable="false" pattern="" precision="0" sourceType="" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="19" name="FLAGGED_AT" nullable="false" pattern="&quot;yyyy-MM-dd HH:mm:ss&quot;" precision="0" sourceType="" type="id_Date" usefulColumn="true"/>
+    </metadata>
+    <nodeData xsi:type="TalendMapper:MapperData">
+      <uiProperties shellMaximized="true"/>
+      <varTables sizeState="INTERMEDIATE" name="Var" minimized="false">
+        <mapperTableEntries name="ssnOk" expression="AccountValidator.isValidSSN(row1.SSN)" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="emailOk" expression="row1.EMAIL != null &amp;&amp; row1.EMAIL.contains(&quot;@&quot;)" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="phoneOk" expression="row1.PHONE_PRIMARY != null &amp;&amp; row1.PHONE_PRIMARY.replaceAll(&quot;[^0-9]&quot;, &quot;&quot;).length() == 10" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="zipOk" expression="row1.ZIP_CODE != null &amp;&amp; row1.ZIP_CODE.matches(&quot;\\d{5}(-\\d{4})?&quot;)" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="allValid" expression="Var.ssnOk &amp;&amp; Var.emailOk &amp;&amp; Var.phoneOk &amp;&amp; Var.zipOk" type="id_Boolean" nullable="false"/>
+      </varTables>
+      <outputTables sizeState="INTERMEDIATE" name="valid_records" expressionFilter="Var.allValid">
+        <mapperTableEntries name="CUSTOMER_ID" expression="row1.CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="SSN_VALID" expression="Var.ssnOk" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="EMAIL_VALID" expression="Var.emailOk" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="PHONE_VALID" expression="Var.phoneOk" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="ZIP_VALID" expression="Var.zipOk" type="id_Boolean" nullable="false"/>
+        <mapperTableEntries name="VALIDATION_STATUS" expression="&quot;PASS&quot;" type="id_String" nullable="false"/>
+        <mapperTableEntries name="VALIDATED_AT" expression="TalendDate.getCurrentDate()" type="id_Date" nullable="false"/>
+      </outputTables>
+      <outputTables sizeState="INTERMEDIATE" name="invalid_records" expressionFilter="!Var.allValid" reject="true">
+        <mapperTableEntries name="CUSTOMER_ID" expression="row1.CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="VALIDATION_ERRORS" expression="(!Var.ssnOk ? &quot;INVALID_SSN;&quot; : &quot;&quot;) + (!Var.emailOk ? &quot;INVALID_EMAIL;&quot; : &quot;&quot;) + (!Var.phoneOk ? &quot;INVALID_PHONE;&quot; : &quot;&quot;) + (!Var.zipOk ? &quot;INVALID_ZIP;&quot; : &quot;&quot;)" type="id_String" nullable="false"/>
+        <mapperTableEntries name="FLAGGED_AT" expression="TalendDate.getCurrentDate()" type="id_Date" nullable="false"/>
+      </outputTables>
+      <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
+        <mapperTableEntries name="CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="SSN" type="id_String" nullable="true"/>
+        <mapperTableEntries name="EMAIL" type="id_String" nullable="true"/>
+        <mapperTableEntries name="PHONE_PRIMARY" type="id_String" nullable="true"/>
+        <mapperTableEntries name="STATE_CODE" type="id_String" nullable="true"/>
+        <mapperTableEntries name="ZIP_CODE" type="id_String" nullable="true"/>
+        <mapperTableEntries name="ACCOUNT_STATUS" type="id_String" nullable="false"/>
+      </inputTables>
+    </nodeData>
+  </node>
+  <node componentName="tDBOutput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="544" posY="64">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBOutput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="DBTABLE" name="TABLE" value="&quot;CUSTOMER_VALIDATION_RESULTS&quot;"/>
+    <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Valid Records&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+  </node>
+  <node componentName="tLogRow" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="544" posY="160">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tLogRow_1" show="false"/>
+    <elementParameter field="RADIO" name="TABLE_PRINT" value="true"/>
+    <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;|&quot;"/>
+    <elementParameter field="CHECK" name="PRINT_HEADER" value="true"/>
+    <elementParameter field="CHECK" name="PRINT_CONTENT_WITH_LOG4J" value="true"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Log Invalid Records&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+  </node>
+  <connection connectorName="FLOW" label="row1" lineStyle="0" metaname="tDBInput_1" offsetLabelX="0" offsetLabelY="0" source="tDBInput_1" target="tMap_1">
+    <elementParameter field="CHECK" name="MONITOR_CONNECTION" value="false"/>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="row1" show="false"/>
+  </connection>
+  <connection connectorName="FLOW" label="valid_records" lineStyle="0" metaname="valid_records" offsetLabelX="0" offsetLabelY="0" source="tMap_1" target="tDBOutput_1">
+    <elementParameter field="CHECK" name="MONITOR_CONNECTION" value="false"/>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="valid_records" show="false"/>
+  </connection>
+  <connection connectorName="FLOW" label="invalid_records" lineStyle="0" metaname="invalid_records" offsetLabelX="0" offsetLabelY="0" source="tMap_1" target="tLogRow_1">
+    <elementParameter field="CHECK" name="MONITOR_CONNECTION" value="false"/>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="invalid_records" show="false"/>
+  </connection>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="92;131;150" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="207;226;236"/>
+  </subjob>
+</talendfile:ProcessType>

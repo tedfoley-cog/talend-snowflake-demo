@@ -38,7 +38,9 @@ def run(session: Session, config: dict) -> None:
     rows = []
     for _, r in pdf.iterrows():
         monthly = calculate_monthly_payment(
-            r["REQUESTED_AMOUNT"], r.get("INTEREST_RATE", 0) or 0, int(r["TERM_MONTHS"])
+            r["REQUESTED_AMOUNT"],
+            0 if pd.isna(r.get("INTEREST_RATE")) else float(r.get("INTEREST_RATE", 0)),
+            int(r["TERM_MONTHS"]),
         )
         annual_income = r["ANNUAL_INCOME"]
         dti = (monthly * 12) / annual_income if annual_income > 0 else 0.0

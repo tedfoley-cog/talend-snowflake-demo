@@ -62,7 +62,7 @@ def run(session: Session, config: dict) -> None:
     )
 
     df_scd = df.select(
-        F.monotonically_increasing_id().alias("DIM_CUSTOMER_SK"),
+        F.seq8().alias("DIM_CUSTOMER_SK"),
         F.col("CUSTOMER_ID"),
         F.col("FULL_NAME"),
         F.col("SSN_MASKED"),

@@ -58,7 +58,7 @@ def run(session: Session, config: dict) -> None:
     df = df.with_column(
         "ZIP_VALID",
         F.col("ZIP_CODE").is_not_null()
-        & F.col("ZIP_CODE").rlike("\\d{5}(-\\d{4})?"),
+        & F.col("ZIP_CODE").rlike("^\\d{5}(-\\d{4})?$"),
     )
     df = df.with_column(
         "ALL_VALID",

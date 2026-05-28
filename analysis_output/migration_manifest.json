@@ -1,0 +1,971 @@
+{
+  "generated_at": "2026-05-28T02:24:55.307184+00:00",
+  "source_platform": "Talend Open Studio / Talend Data Integration",
+  "target_platform": "Python 3.11 + Snowpark for Snowflake",
+  "jobs": [
+    {
+      "job_name": "customer_dimension_load",
+      "domain": "customer_accounts",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "scd2_output",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "DateFormatUtils"
+      ],
+      "target_tables": [
+        "DIM_CUSTOMER"
+      ],
+      "complexity": {
+        "score": 28,
+        "tier": "STRAIGHTFORWARD",
+        "effort_hours": 3.8,
+        "factors": [
+          "Moderate tMap expressions (score=19)",
+          "Custom routines: DateFormatUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/customer_accounts/customer_dimension_load.py",
+      "test_file": "python_target/tests/test_customer_accounts.py"
+    },
+    {
+      "job_name": "customer_extract",
+      "domain": "customer_accounts",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "out_customer",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "Numeric",
+        "StringHandling",
+        "TalendDate",
+        "TalendString",
+        "DateFormatUtils",
+        "AccountValidator"
+      ],
+      "target_tables": [
+        "STG_CUSTOMER"
+      ],
+      "complexity": {
+        "score": 51,
+        "tier": "MODERATE",
+        "effort_hours": 12.2,
+        "factors": [
+          "Moderate tMap expressions (score=30)",
+          "Custom routines: DateFormatUtils, AccountValidator",
+          "14 context parameters",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/customer_accounts/customer_extract.py",
+      "test_file": "python_target/tests/test_customer_accounts.py"
+    },
+    {
+      "job_name": "customer_validation",
+      "domain": "customer_accounts",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        },
+        {
+          "name": "tLogRow_1",
+          "type": "tLogRow"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "valid_records",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tLogRow_1",
+          "label": "invalid_records",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "Numeric",
+        "StringHandling",
+        "TalendDate",
+        "AccountValidator"
+      ],
+      "target_tables": [
+        "CUSTOMER_VALIDATION_RESULTS"
+      ],
+      "complexity": {
+        "score": 68,
+        "tier": "COMPLEX",
+        "effort_hours": 24.4,
+        "factors": [
+          "Complex tMap expressions (score=62)",
+          "tMap has 2 output flows (split/reject)",
+          "Custom routines: AccountValidator",
+          "6 context parameters",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/customer_accounts/customer_validation.py",
+      "test_file": "python_target/tests/test_customer_accounts.py"
+    },
+    {
+      "job_name": "cfpb_extract",
+      "domain": "regulatory_reporting",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tDBInput_2",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tDBInput_3",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tFileOutputDelimited_1",
+          "type": "tFileOutputDelimited"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tDBInput_2",
+          "target": "tMap_1",
+          "label": "row2",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tDBInput_3",
+          "target": "tMap_1",
+          "label": "row3",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tFileOutputDelimited_1",
+          "label": "cfpb_record",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils",
+        "DateFormatUtils"
+      ],
+      "target_tables": [],
+      "complexity": {
+        "score": 81,
+        "tier": "COMPLEX",
+        "effort_hours": 28.3,
+        "factors": [
+          "5 components",
+          "4 connections (multi-flow)",
+          "Complex tMap expressions (score=47)",
+          "tMap joins 3 input sources",
+          "Custom routines: AmountUtils, DateFormatUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/regulatory_reporting/cfpb_extract.py",
+      "test_file": "python_target/tests/test_regulatory_reporting.py"
+    },
+    {
+      "job_name": "occ_compliance_report",
+      "domain": "regulatory_reporting",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "occ_output",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [
+        "OCC_COMPLIANCE_REPORT"
+      ],
+      "complexity": {
+        "score": 38,
+        "tier": "MODERATE",
+        "effort_hours": 9.6,
+        "factors": [
+          "Complex tMap expressions (score=56)",
+          "Custom routines: AmountUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/regulatory_reporting/occ_compliance_report.py",
+      "test_file": "python_target/tests/test_regulatory_reporting.py"
+    },
+    {
+      "job_name": "regulatory_archive",
+      "domain": "regulatory_reporting",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tFileOutputDelimited_1",
+          "type": "tFileOutputDelimited"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tFileOutputDelimited_1",
+          "label": "row1",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "DateFormatUtils"
+      ],
+      "target_tables": [],
+      "complexity": {
+        "score": 8,
+        "tier": "STRAIGHTFORWARD",
+        "effort_hours": 1.8,
+        "factors": [
+          "Custom routines: DateFormatUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/regulatory_reporting/regulatory_archive.py",
+      "test_file": "python_target/tests/test_regulatory_reporting.py"
+    },
+    {
+      "job_name": "loan_application_ingest",
+      "domain": "loan_processing",
+      "components": [
+        {
+          "name": "tFileInputDelimited_1",
+          "type": "tFileInputDelimited"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tFileInputDelimited_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "loan_output",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [
+        "STG_LOAN_APPLICATION"
+      ],
+      "complexity": {
+        "score": 38,
+        "tier": "MODERATE",
+        "effort_hours": 9.6,
+        "factors": [
+          "Complex tMap expressions (score=50)",
+          "Custom routines: AmountUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/loan_processing/loan_application_ingest.py",
+      "test_file": "python_target/tests/test_loan_processing.py"
+    },
+    {
+      "job_name": "loan_risk_scoring",
+      "domain": "loan_processing",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "scored_loans",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [
+        "LOAN_RISK_SCORES"
+      ],
+      "complexity": {
+        "score": 48,
+        "tier": "MODERATE",
+        "effort_hours": 11.6,
+        "factors": [
+          "Complex tMap expressions (score=113)",
+          "Custom routines: AmountUtils",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/loan_processing/loan_risk_scoring.py",
+      "test_file": "python_target/tests/test_loan_processing.py"
+    },
+    {
+      "job_name": "loan_status_update",
+      "domain": "loan_processing",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tDBRow_1",
+          "type": "tDBRow"
+        },
+        {
+          "name": "tLogRow_1",
+          "type": "tLogRow"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tDBRow_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tDBRow_1",
+          "target": "tLogRow_1",
+          "label": "row2",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate"
+      ],
+      "target_tables": [],
+      "complexity": {
+        "score": 25,
+        "tier": "STRAIGHTFORWARD",
+        "effort_hours": 3.5,
+        "factors": [
+          "Uses tDBRow (dynamic SQL execution)",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/loan_processing/loan_status_update.py",
+      "test_file": "python_target/tests/test_loan_processing.py"
+    },
+    {
+      "job_name": "address_standardization",
+      "domain": "data_quality",
+      "components": [
+        {
+          "name": "tFileInputDelimited_1",
+          "type": "tFileInputDelimited"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tFileInputDelimited_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "standardized_output",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "StringHandling",
+        "TalendDate"
+      ],
+      "target_tables": [
+        "STG_ADDRESS_STANDARDIZED"
+      ],
+      "complexity": {
+        "score": 30,
+        "tier": "MODERATE",
+        "effort_hours": 8.0,
+        "factors": [
+          "Complex tMap expressions (score=94)"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/data_quality/address_standardization.py",
+      "test_file": "python_target/tests/test_data_quality.py"
+    },
+    {
+      "job_name": "dedup_customer",
+      "domain": "data_quality",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        },
+        {
+          "name": "tLogRow_1",
+          "type": "tLogRow"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "dedup_results",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tLogRow_1",
+          "label": "dedup_log",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "StringHandling",
+        "TalendDate",
+        "AccountValidator"
+      ],
+      "target_tables": [
+        "CUSTOMER_DEDUP_RESULTS"
+      ],
+      "complexity": {
+        "score": 53,
+        "tier": "MODERATE",
+        "effort_hours": 12.6,
+        "factors": [
+          "Complex tMap expressions (score=38)",
+          "tMap has 2 output flows (split/reject)",
+          "Custom routines: AccountValidator"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/data_quality/dedup_customer.py",
+      "test_file": "python_target/tests/test_data_quality.py"
+    },
+    {
+      "job_name": "payment_discrepancy",
+      "domain": "payment_reconciliation",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tFileOutputDelimited_1",
+          "type": "tFileOutputDelimited"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tFileOutputDelimited_1",
+          "label": "discrepancy_report",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [],
+      "complexity": {
+        "score": 18,
+        "tier": "STRAIGHTFORWARD",
+        "effort_hours": 2.8,
+        "factors": [
+          "Custom routines: AmountUtils"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/payment_reconciliation/payment_discrepancy.py",
+      "test_file": "python_target/tests/test_payment_reconciliation.py"
+    },
+    {
+      "job_name": "payment_match",
+      "domain": "payment_reconciliation",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tDBInput_2",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tDBInput_2",
+          "target": "tMap_1",
+          "label": "row2",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "matched_payments",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "Numeric",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [
+        "PAYMENT_RECONCILIATION"
+      ],
+      "complexity": {
+        "score": 58,
+        "tier": "MODERATE",
+        "effort_hours": 13.6,
+        "factors": [
+          "Complex tMap expressions (score=34)",
+          "tMap joins 2 input sources",
+          "Custom routines: AmountUtils",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/payment_reconciliation/payment_match.py",
+      "test_file": "python_target/tests/test_payment_reconciliation.py"
+    },
+    {
+      "job_name": "payment_settlement",
+      "domain": "payment_reconciliation",
+      "components": [
+        {
+          "name": "tDBInput_1",
+          "type": "tDBInput"
+        },
+        {
+          "name": "tMap_1",
+          "type": "tMap"
+        },
+        {
+          "name": "tDBOutput_1",
+          "type": "tDBOutput"
+        },
+        {
+          "name": "tDBRow_1",
+          "type": "tDBRow"
+        }
+      ],
+      "connections": [
+        {
+          "source": "tDBInput_1",
+          "target": "tMap_1",
+          "label": "row1",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBOutput_1",
+          "label": "settlement_output",
+          "connector": "FLOW"
+        },
+        {
+          "source": "tMap_1",
+          "target": "tDBRow_1",
+          "label": "row3",
+          "connector": "FLOW"
+        }
+      ],
+      "routines_used": [
+        "DataOperation",
+        "TalendDate",
+        "AmountUtils"
+      ],
+      "target_tables": [
+        "PAYMENT_SETTLEMENT"
+      ],
+      "complexity": {
+        "score": 48,
+        "tier": "MODERATE",
+        "effort_hours": 11.6,
+        "factors": [
+          "Moderate tMap expressions (score=16)",
+          "Custom routines: AmountUtils",
+          "Uses tDBRow (dynamic SQL execution)",
+          "Cross-database: ORACLE_12, SNOWFLAKE"
+        ]
+      },
+      "conversion_status": "COMPLETE",
+      "converted_file": "python_target/payment_reconciliation/payment_settlement.py",
+      "test_file": "python_target/tests/test_payment_reconciliation.py"
+    }
+  ],
+  "dependency_graph": {
+    "edges": [
+      {
+        "from": "customer_accounts/customer_extract",
+        "to": "data_quality/dedup_customer",
+        "via_table": "STG_CUSTOMER",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "loan_processing/loan_risk_scoring",
+        "to": "regulatory_reporting/cfpb_extract",
+        "via_table": "LOAN_RISK_SCORES",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "loan_processing/loan_risk_scoring",
+        "to": "loan_processing/loan_status_update",
+        "via_table": "LOAN_RISK_SCORES",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "loan_processing/loan_status_update",
+        "to": "regulatory_reporting/cfpb_extract",
+        "via_table": "LOAN_APPLICATION",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "loan_processing/loan_status_update",
+        "to": "loan_processing/loan_risk_scoring",
+        "via_table": "LOAN_APPLICATION",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "payment_reconciliation/payment_match",
+        "to": "payment_reconciliation/payment_discrepancy",
+        "via_table": "PAYMENT_RECONCILIATION",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "payment_reconciliation/payment_match",
+        "to": "payment_reconciliation/payment_settlement",
+        "via_table": "PAYMENT_RECONCILIATION",
+        "relationship": "produces_for"
+      },
+      {
+        "from": "payment_reconciliation/payment_settlement",
+        "to": "payment_reconciliation/payment_match",
+        "via_table": "INCOMING_PAYMENTS",
+        "relationship": "produces_for"
+      }
+    ],
+    "shared_contexts": {
+      "tgt_schema": [
+        "customer_accounts/customer_dimension_load",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "loan_processing/loan_application_ingest",
+        "data_quality/address_standardization"
+      ],
+      "src_db_host": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation",
+        "regulatory_reporting/cfpb_extract",
+        "regulatory_reporting/occ_compliance_report",
+        "loan_processing/loan_risk_scoring",
+        "loan_processing/loan_status_update",
+        "data_quality/dedup_customer",
+        "payment_reconciliation/payment_match",
+        "payment_reconciliation/payment_settlement"
+      ],
+      "src_db_port": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation",
+        "loan_processing/loan_risk_scoring"
+      ],
+      "src_db_name": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation",
+        "loan_processing/loan_risk_scoring"
+      ],
+      "src_db_user": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation"
+      ],
+      "src_db_password": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation"
+      ],
+      "batch_date": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_extract",
+        "loan_processing/loan_status_update"
+      ],
+      "output_dir": [
+        "regulatory_reporting/cfpb_extract",
+        "payment_reconciliation/payment_discrepancy"
+      ],
+      "archive_dir": [
+        "regulatory_reporting/regulatory_archive",
+        "loan_processing/loan_application_ingest"
+      ],
+      "input_dir": [
+        "loan_processing/loan_application_ingest",
+        "data_quality/address_standardization"
+      ]
+    },
+    "custom_routine_usage": {
+      "DateFormatUtils": [
+        "customer_accounts/customer_dimension_load",
+        "customer_accounts/customer_extract",
+        "regulatory_reporting/cfpb_extract",
+        "regulatory_reporting/regulatory_archive"
+      ],
+      "AccountValidator": [
+        "customer_accounts/customer_extract",
+        "customer_accounts/customer_validation",
+        "data_quality/dedup_customer"
+      ],
+      "AmountUtils": [
+        "regulatory_reporting/cfpb_extract",
+        "regulatory_reporting/occ_compliance_report",
+        "loan_processing/loan_application_ingest",
+        "loan_processing/loan_risk_scoring",
+        "payment_reconciliation/payment_discrepancy",
+        "payment_reconciliation/payment_match",
+        "payment_reconciliation/payment_settlement"
+      ]
+    }
+  },
+  "component_distribution": {
+    "tDBInput": 15,
+    "tMap": 12,
+    "tDBOutput": 10,
+    "tLogRow": 3,
+    "tFileOutputDelimited": 3,
+    "tFileInputDelimited": 2,
+    "tDBRow": 2
+  },
+  "summary": {
+    "total_jobs": 14,
+    "domains": [
+      "customer_accounts",
+      "data_quality",
+      "loan_processing",
+      "payment_reconciliation",
+      "regulatory_reporting"
+    ],
+    "tier_distribution": {
+      "STRAIGHTFORWARD": 4,
+      "MODERATE": 8,
+      "COMPLEX": 2
+    },
+    "total_effort_hours": 153.4,
+    "total_components": 47,
+    "total_connections": 33,
+    "unique_tables": [
+      "CUSTOMER_DEDUP_RESULTS",
+      "CUSTOMER_VALIDATION_RESULTS",
+      "DIM_CUSTOMER",
+      "LOAN_RISK_SCORES",
+      "OCC_COMPLIANCE_REPORT",
+      "PAYMENT_RECONCILIATION",
+      "PAYMENT_SETTLEMENT",
+      "STG_ADDRESS_STANDARDIZED",
+      "STG_CUSTOMER",
+      "STG_LOAN_APPLICATION"
+    ]
+  }
+}

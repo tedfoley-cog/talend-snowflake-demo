@@ -1,0 +1,4248 @@
+[
+  {
+    "job_name": "customer_dimension_load",
+    "domain": "customer_accounts",
+    "file": "talend_jobs/customer_accounts/customer_dimension_load_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_schema",
+            "type": "id_String",
+            "value": "RAW",
+            "comment": "Source schema"
+          },
+          {
+            "name": "tgt_schema",
+            "type": "id_String",
+            "value": "DIM",
+            "comment": "Target schema"
+          },
+          {
+            "name": "effective_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "SCD effective date"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Changed/New Customers",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT \n  s.CUSTOMER_ID, s.FULL_NAME, s.SSN_MASKED, s.EMAIL, \n  s.PHONE_PRIMARY, s.FULL_ADDRESS, s.ACCOUNT_STATUS, \n  s.CREDIT_SCORE, s.CUSTOMER_SINCE, s.ETL_LOAD_TS\nFROM RAW.STG_CUSTOMER s\nLEFT JOIN DIM.DIM_CUSTOMER d ON s.CUSTOMER_ID = d.CUSTOMER_ID AND d.IS_CURRENT = 1\nWHERE d.CUSTOMER_ID IS NULL \n   OR s.FULL_NAME != d.FULL_NAME \n   OR s.EMAIL != d.EMAIL \n   OR s.ACCOUNT_STATUS != d.ACCOUNT_STATUS \n   OR s.CREDIT_SCORE != d.CREDIT_SCORE\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "FULL_NAME",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "SSN_MASKED",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "PHONE_PRIMARY",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "FULL_ADDRESS",
+                "type": "id_String",
+                "length": "300",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CUSTOMER_SINCE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "ETL_LOAD_TS",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "scd2_output",
+            "columns": [
+              {
+                "name": "DIM_CUSTOMER_SK",
+                "type": "id_Long",
+                "length": "38",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "FULL_NAME",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "SSN_MASKED",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "EFF_START_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "EFF_END_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "IS_CURRENT",
+                "type": "id_Integer",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "scd2_output",
+            "column": "DIM_CUSTOMER_SK",
+            "expression": "Numeric.sequence(\"customer_sk\", 1, 1)"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "FULL_NAME",
+            "expression": "row1.FULL_NAME"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "SSN_MASKED",
+            "expression": "row1.SSN_MASKED"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "EMAIL",
+            "expression": "row1.EMAIL"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "ACCOUNT_STATUS",
+            "expression": "row1.ACCOUNT_STATUS"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "CREDIT_SCORE",
+            "expression": "row1.CREDIT_SCORE"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "EFF_START_DATE",
+            "expression": "DateFormatUtils.parseDate(context.effective_date != null && !context.effective_date.isEmpty() ? context.effective_date : TalendDate.getDate(\"yyyy-MM-dd\"), \"yyyy-MM-dd\")"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "EFF_END_DATE",
+            "expression": "null"
+          },
+          {
+            "output_table": "scd2_output",
+            "column": "IS_CURRENT",
+            "expression": "1"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "SCD Type 2 Insert",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"DIM_CUSTOMER\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "scd2_output",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "DateFormatUtils"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "customer_extract",
+    "domain": "customer_accounts",
+    "file": "talend_jobs/customer_accounts/customer_extract_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source database host"
+          },
+          {
+            "name": "src_db_port",
+            "type": "id_String",
+            "value": "1521",
+            "comment": "Source database port"
+          },
+          {
+            "name": "src_db_name",
+            "type": "id_String",
+            "value": "CUSTDB",
+            "comment": "Source database name"
+          },
+          {
+            "name": "src_db_user",
+            "type": "id_String",
+            "value": "etl_reader",
+            "comment": "Source database user"
+          },
+          {
+            "name": "src_db_password",
+            "type": "id_Password",
+            "value": "enc:system.encryption.key.v1:aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789",
+            "comment": "Source database password"
+          },
+          {
+            "name": "tgt_schema",
+            "type": "id_String",
+            "value": "RAW",
+            "comment": "Target Snowflake schema"
+          },
+          {
+            "name": "batch_date",
+            "type": "id_String",
+            "value": "2024-01-15",
+            "comment": "Batch run date"
+          }
+        ]
+      },
+      {
+        "name": "Production",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source database host"
+          },
+          {
+            "name": "src_db_port",
+            "type": "id_String",
+            "value": "1521",
+            "comment": "Source database port"
+          },
+          {
+            "name": "src_db_name",
+            "type": "id_String",
+            "value": "CUSTDB",
+            "comment": "Source database name"
+          },
+          {
+            "name": "src_db_user",
+            "type": "id_String",
+            "value": "etl_reader",
+            "comment": "Source database user"
+          },
+          {
+            "name": "src_db_password",
+            "type": "id_Password",
+            "value": "enc:system.encryption.key.v1:aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789",
+            "comment": "Source database password"
+          },
+          {
+            "name": "tgt_schema",
+            "type": "id_String",
+            "value": "RAW",
+            "comment": "Target Snowflake schema"
+          },
+          {
+            "name": "batch_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "Batch run date"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Source: CUSTOMER_MASTER",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "TABLE": "\"CUSTOMER_MASTER\"",
+          "QUERY": "\"SELECT \n  c.CUSTOMER_ID, \n  c.FIRST_NAME, \n  c.LAST_NAME, \n  c.SSN, \n  c.DATE_OF_BIRTH, \n  c.EMAIL, \n  c.PHONE_PRIMARY, \n  c.ADDRESS_LINE1, \n  c.ADDRESS_LINE2, \n  c.CITY, \n  c.STATE_CODE, \n  c.ZIP_CODE, \n  c.ACCOUNT_STATUS, \n  c.CREDIT_SCORE, \n  c.CUSTOMER_SINCE, \n  c.LAST_UPDATED\nFROM CUSTOMER_MASTER c\nWHERE c.LAST_UPDATED >= TO_DATE('' || context.batch_date || '', 'YYYY-MM-DD')\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "FIRST_NAME",
+                "type": "id_String",
+                "length": "50",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "LAST_NAME",
+                "type": "id_String",
+                "length": "50",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "SSN",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "DATE_OF_BIRTH",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "PHONE_PRIMARY",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ADDRESS_LINE1",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ADDRESS_LINE2",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CITY",
+                "type": "id_String",
+                "length": "50",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ZIP_CODE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CUSTOMER_SINCE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "LAST_UPDATED",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": true,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "out_customer",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "FULL_NAME",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "SSN_MASKED",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DATE_OF_BIRTH",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "PHONE_PRIMARY",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "FULL_ADDRESS",
+                "type": "id_String",
+                "length": "300",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CUSTOMER_SINCE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "ETL_LOAD_TS",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "out_customer",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "FULL_NAME",
+            "expression": "row1.FIRST_NAME + \" \" + row1.LAST_NAME"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "SSN_MASKED",
+            "expression": "\"***-**-\" + row1.SSN.substring(7)"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "DATE_OF_BIRTH",
+            "expression": "row1.DATE_OF_BIRTH"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "EMAIL",
+            "expression": "row1.EMAIL != null ? row1.EMAIL.toLowerCase() : null"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "PHONE_PRIMARY",
+            "expression": "row1.PHONE_PRIMARY"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "FULL_ADDRESS",
+            "expression": "row1.ADDRESS_LINE1 + (row1.ADDRESS_LINE2 != null ? \" \" + row1.ADDRESS_LINE2 : \"\") + \", \" + row1.CITY + \", \" + row1.STATE_CODE + \" \" + row1.ZIP_CODE"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "ACCOUNT_STATUS",
+            "expression": "row1.ACCOUNT_STATUS"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "CREDIT_SCORE",
+            "expression": "row1.CREDIT_SCORE"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "CUSTOMER_SINCE",
+            "expression": "row1.CUSTOMER_SINCE"
+          },
+          {
+            "output_table": "out_customer",
+            "column": "ETL_LOAD_TS",
+            "expression": "TalendDate.getCurrentDate()"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Target: STG_CUSTOMER",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"STG_CUSTOMER\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBOutput_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "FULL_NAME",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "SSN_MASKED",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "DATE_OF_BIRTH",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "PHONE_PRIMARY",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "FULL_ADDRESS",
+                "type": "id_String",
+                "length": "300",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CUSTOMER_SINCE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "ETL_LOAD_TS",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "out_customer",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "Numeric",
+      "StringHandling",
+      "TalendDate",
+      "TalendString",
+      "DateFormatUtils",
+      "AccountValidator"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "customer_validation",
+    "domain": "customer_accounts",
+    "file": "talend_jobs/customer_accounts/customer_validation_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source database host"
+          },
+          {
+            "name": "src_db_port",
+            "type": "id_String",
+            "value": "1521",
+            "comment": "Source database port"
+          },
+          {
+            "name": "src_db_name",
+            "type": "id_String",
+            "value": "CUSTDB",
+            "comment": "Source database name"
+          },
+          {
+            "name": "src_db_user",
+            "type": "id_String",
+            "value": "etl_reader",
+            "comment": "Source database user"
+          },
+          {
+            "name": "src_db_password",
+            "type": "id_Password",
+            "value": "enc:system.encryption.key.v1:aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789",
+            "comment": "Source database password"
+          },
+          {
+            "name": "error_threshold",
+            "type": "id_Integer",
+            "value": "100",
+            "comment": "Validation error threshold"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Active Customers",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT CUSTOMER_ID, SSN, EMAIL, PHONE_PRIMARY, STATE_CODE, ZIP_CODE, ACCOUNT_STATUS FROM CUSTOMER_MASTER WHERE ACCOUNT_STATUS = 'ACTIVE'\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "SSN",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "EMAIL",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "PHONE_PRIMARY",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ZIP_CODE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "valid_records",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "SSN_VALID",
+                "type": "id_Boolean",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "EMAIL_VALID",
+                "type": "id_Boolean",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "PHONE_VALID",
+                "type": "id_Boolean",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ZIP_VALID",
+                "type": "id_Boolean",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "VALIDATION_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "VALIDATED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          },
+          {
+            "connector": "FLOW",
+            "name": "invalid_records",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "VALIDATION_ERRORS",
+                "type": "id_String",
+                "length": "500",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "FLAGGED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "valid_records",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "valid_records",
+            "column": "SSN_VALID",
+            "expression": "Var.ssnOk"
+          },
+          {
+            "output_table": "valid_records",
+            "column": "EMAIL_VALID",
+            "expression": "Var.emailOk"
+          },
+          {
+            "output_table": "valid_records",
+            "column": "PHONE_VALID",
+            "expression": "Var.phoneOk"
+          },
+          {
+            "output_table": "valid_records",
+            "column": "ZIP_VALID",
+            "expression": "Var.zipOk"
+          },
+          {
+            "output_table": "valid_records",
+            "column": "VALIDATION_STATUS",
+            "expression": "\"PASS\""
+          },
+          {
+            "output_table": "valid_records",
+            "column": "VALIDATED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "invalid_records",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "invalid_records",
+            "column": "VALIDATION_ERRORS",
+            "expression": "(!Var.ssnOk ? \"INVALID_SSN;\" : \"\") + (!Var.emailOk ? \"INVALID_EMAIL;\" : \"\") + (!Var.phoneOk ? \"INVALID_PHONE;\" : \"\") + (!Var.zipOk ? \"INVALID_ZIP;\" : \"\")"
+          },
+          {
+            "output_table": "invalid_records",
+            "column": "FLAGGED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "__var__",
+            "column": "ssnOk",
+            "expression": "AccountValidator.isValidSSN(row1.SSN)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "emailOk",
+            "expression": "row1.EMAIL != null && row1.EMAIL.contains(\"@\")"
+          },
+          {
+            "output_table": "__var__",
+            "column": "phoneOk",
+            "expression": "row1.PHONE_PRIMARY != null && row1.PHONE_PRIMARY.replaceAll(\"[^0-9]\", \"\").length() == 10"
+          },
+          {
+            "output_table": "__var__",
+            "column": "zipOk",
+            "expression": "row1.ZIP_CODE != null && row1.ZIP_CODE.matches(\"\\\\d{5}(-\\\\d{4})?\")"
+          },
+          {
+            "output_table": "__var__",
+            "column": "allValid",
+            "expression": "Var.ssnOk && Var.emailOk && Var.phoneOk && Var.zipOk"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Valid Records",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"CUSTOMER_VALIDATION_RESULTS\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tLogRow_1",
+        "component_name": "tLogRow",
+        "label": "Log Invalid Records",
+        "parameters": {},
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "valid_records",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tLogRow_1",
+        "label": "invalid_records",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "Numeric",
+      "StringHandling",
+      "TalendDate",
+      "AccountValidator"
+    ],
+    "component_count": 4,
+    "connection_count": 3
+  },
+  {
+    "job_name": "cfpb_extract",
+    "domain": "regulatory_reporting",
+    "file": "talend_jobs/regulatory_reporting/cfpb_extract_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source host"
+          },
+          {
+            "name": "reporting_period_start",
+            "type": "id_String",
+            "value": "2024-01-01",
+            "comment": "Period start"
+          },
+          {
+            "name": "reporting_period_end",
+            "type": "id_String",
+            "value": "2024-03-31",
+            "comment": "Period end"
+          },
+          {
+            "name": "output_dir",
+            "type": "id_String",
+            "value": "/data/regulatory/cfpb/",
+            "comment": "Output directory"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Loan Applications",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT la.APPLICATION_ID, la.CUSTOMER_ID, la.LOAN_TYPE, la.REQUESTED_AMOUNT, la.APPLICATION_DATE, la.STATUS, lr.DECISION, lr.RISK_SCORE FROM LOAN_APPLICATION la LEFT JOIN LOAN_RISK_SCORES lr ON la.APPLICATION_ID = lr.APPLICATION_ID WHERE la.APPLICATION_DATE BETWEEN TO_DATE(context.reporting_period_start, 'YYYY-MM-DD') AND TO_DATE(context.reporting_period_end, 'YYYY-MM-DD')\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "REQUESTED_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "APPLICATION_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "STATUS",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "DECISION",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "RISK_SCORE",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tDBInput_2",
+        "component_name": "tDBInput",
+        "label": "Customer Demographics",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT CUSTOMER_ID, STATE_CODE, ZIP_CODE, CREDIT_SCORE, ANNUAL_INCOME, DATE_OF_BIRTH FROM CUSTOMER_MASTER\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_2",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ZIP_CODE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "ANNUAL_INCOME",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DATE_OF_BIRTH",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tDBInput_3",
+        "component_name": "tDBInput",
+        "label": "Adverse Actions",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT APPLICATION_ID, ADVERSE_ACTION_CODE, ADVERSE_ACTION_DATE, NOTICE_SENT FROM ADVERSE_ACTIONS WHERE ADVERSE_ACTION_DATE BETWEEN TO_DATE(context.reporting_period_start, 'YYYY-MM-DD') AND TO_DATE(context.reporting_period_end, 'YYYY-MM-DD')\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_3",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ADVERSE_ACTION_CODE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "ADVERSE_ACTION_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "NOTICE_SENT",
+                "type": "id_String",
+                "length": "1",
+                "nullable": false,
+                "key": false,
+                "sourceType": "CHAR"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "cfpb_record",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "REQUESTED_AMOUNT",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "APPLICATION_DATE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ACTION_TAKEN",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CENSUS_TRACT",
+                "type": "id_String",
+                "length": "3",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "INCOME_BRACKET",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "REPORT_PERIOD",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "cfpb_record",
+            "column": "APPLICATION_ID",
+            "expression": "row1.APPLICATION_ID"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "LOAN_TYPE",
+            "expression": "row1.LOAN_TYPE"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "REQUESTED_AMOUNT",
+            "expression": "AmountUtils.formatCurrency(row1.REQUESTED_AMOUNT)"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "APPLICATION_DATE",
+            "expression": "DateFormatUtils.formatDate(row1.APPLICATION_DATE, \"MM/dd/yyyy\")"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "ACTION_TAKEN",
+            "expression": "Var.actionTaken"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "STATE_CODE",
+            "expression": "row2.STATE_CODE"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "CENSUS_TRACT",
+            "expression": "row2.ZIP_CODE != null ? row2.ZIP_CODE.substring(0, 3) : null"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "INCOME_BRACKET",
+            "expression": "Var.incomeBracket"
+          },
+          {
+            "output_table": "cfpb_record",
+            "column": "REPORT_PERIOD",
+            "expression": "context.reporting_period_start + \" to \" + context.reporting_period_end"
+          },
+          {
+            "output_table": "__var__",
+            "column": "actionTaken",
+            "expression": "row3.ADVERSE_ACTION_CODE != null ? \"DENIED\" : (row1.DECISION != null ? row1.DECISION : row1.STATUS)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "incomeBracket",
+            "expression": "row2.ANNUAL_INCOME != null ? (row2.ANNUAL_INCOME < 50000 ? \"LOW\" : (row2.ANNUAL_INCOME < 100000 ? \"MEDIUM\" : \"HIGH\")) : \"NOT_REPORTED\""
+          }
+        ]
+      },
+      {
+        "unique_name": "tFileOutputDelimited_1",
+        "component_name": "tFileOutputDelimited",
+        "label": "CFPB HMDA File",
+        "parameters": {
+          "FILENAME": "context.output_dir + \"cfpb_hmda_\" + context.reporting_period_end + \".csv\""
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tDBInput_2",
+        "target": "tMap_1",
+        "label": "row2",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tDBInput_3",
+        "target": "tMap_1",
+        "label": "row3",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tFileOutputDelimited_1",
+        "label": "cfpb_record",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "AmountUtils",
+      "DateFormatUtils"
+    ],
+    "component_count": 5,
+    "connection_count": 4
+  },
+  {
+    "job_name": "occ_compliance_report",
+    "domain": "regulatory_reporting",
+    "file": "talend_jobs/regulatory_reporting/occ_compliance_report_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source host"
+          },
+          {
+            "name": "quarter",
+            "type": "id_String",
+            "value": "Q1-2024",
+            "comment": "Reporting quarter"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Portfolio Summary",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT LOAN_TYPE, COUNT(*) AS TOTAL_LOANS, SUM(REQUESTED_AMOUNT) AS TOTAL_VOLUME, AVG(RISK_SCORE) AS AVG_RISK, COUNT(CASE WHEN DECISION = 'AUTO_DECLINE' THEN 1 END) AS DECLINE_COUNT, COUNT(CASE WHEN DAYS_PAST_DUE > 30 THEN 1 END) AS DELINQUENT_30, COUNT(CASE WHEN DAYS_PAST_DUE > 60 THEN 1 END) AS DELINQUENT_60, COUNT(CASE WHEN DAYS_PAST_DUE > 90 THEN 1 END) AS DELINQUENT_90 FROM LOAN_PORTFOLIO_VIEW GROUP BY LOAN_TYPE\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "TOTAL_LOANS",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "TOTAL_VOLUME",
+                "type": "id_Double",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "AVG_RISK",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DECLINE_COUNT",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DELINQUENT_30",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DELINQUENT_60",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DELINQUENT_90",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "occ_output",
+            "columns": [
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "TOTAL_LOANS",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "TOTAL_VOLUME",
+                "type": "id_Double",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DECLINE_RATE",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DELINQUENCY_RATE_30",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DELINQUENCY_RATE_60",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DELINQUENCY_RATE_90",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "QUARTER",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "occ_output",
+            "column": "LOAN_TYPE",
+            "expression": "row1.LOAN_TYPE"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "TOTAL_LOANS",
+            "expression": "row1.TOTAL_LOANS"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "TOTAL_VOLUME",
+            "expression": "row1.TOTAL_VOLUME"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "DECLINE_RATE",
+            "expression": "row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DECLINE_COUNT / row1.TOTAL_LOANS, 4) : 0"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "DELINQUENCY_RATE_30",
+            "expression": "row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_30 / row1.TOTAL_LOANS, 4) : 0"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "DELINQUENCY_RATE_60",
+            "expression": "row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_60 / row1.TOTAL_LOANS, 4) : 0"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "DELINQUENCY_RATE_90",
+            "expression": "row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_90 / row1.TOTAL_LOANS, 4) : 0"
+          },
+          {
+            "output_table": "occ_output",
+            "column": "QUARTER",
+            "expression": "context.quarter"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "OCC Report Table",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"OCC_COMPLIANCE_REPORT\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "occ_output",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "regulatory_archive",
+    "domain": "regulatory_reporting",
+    "file": "talend_jobs/regulatory_reporting/regulatory_archive_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "archive_dir",
+            "type": "id_String",
+            "value": "/data/archive/regulatory/",
+            "comment": "Archive directory"
+          },
+          {
+            "name": "retention_months",
+            "type": "id_Integer",
+            "value": "84",
+            "comment": "Retention period months"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Compliance Reports",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT REPORT_ID, REPORT_TYPE, QUARTER, GENERATED_AT, REPORT_DATA FROM COMPLIANCE_REPORTS WHERE GENERATED_AT >= DATEADD(month, -context.retention_months, CURRENT_DATE()) ORDER BY GENERATED_AT DESC\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "REPORT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "REPORT_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "QUARTER",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "GENERATED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              },
+              {
+                "name": "REPORT_DATA",
+                "type": "id_String",
+                "length": "10000",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tFileOutputDelimited_1",
+        "component_name": "tFileOutputDelimited",
+        "label": "Archive File",
+        "parameters": {
+          "FILENAME": "context.archive_dir + \"regulatory_archive_\" + TalendDate.getDate(\"yyyyMMdd\") + \".csv\""
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tFileOutputDelimited_1",
+        "label": "row1",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "DateFormatUtils"
+    ],
+    "component_count": 2,
+    "connection_count": 1
+  },
+  {
+    "job_name": "loan_application_ingest",
+    "domain": "loan_processing",
+    "file": "talend_jobs/loan_processing/loan_application_ingest_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "input_dir",
+            "type": "id_String",
+            "value": "/data/incoming/loan_apps/",
+            "comment": "Input file directory"
+          },
+          {
+            "name": "archive_dir",
+            "type": "id_String",
+            "value": "/data/archive/loan_apps/",
+            "comment": "Archive directory"
+          },
+          {
+            "name": "tgt_schema",
+            "type": "id_String",
+            "value": "RAW",
+            "comment": "Target database schema"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tFileInputDelimited_1",
+        "component_name": "tFileInputDelimited",
+        "label": "Daily Loan Apps CSV",
+        "parameters": {
+          "FILENAME": "context.input_dir + \"daily_loan_applications.csv\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tFileInputDelimited_1",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "REQUESTED_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "TERM_MONTHS",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "INTEREST_RATE",
+                "type": "id_Double",
+                "length": "6",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "COLLATERAL_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "COLLATERAL_VALUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ANNUAL_INCOME",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "APPLICATION_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "loan_output",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "REQUESTED_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "FORMATTED_AMOUNT",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "TERM_MONTHS",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "INTEREST_RATE",
+                "type": "id_Double",
+                "length": "6",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DTI_RATIO",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LTV_RATIO",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "APPLICATION_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "INGESTED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "loan_output",
+            "column": "APPLICATION_ID",
+            "expression": "row1.APPLICATION_ID"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "LOAN_TYPE",
+            "expression": "row1.LOAN_TYPE.toUpperCase().trim()"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "REQUESTED_AMOUNT",
+            "expression": "row1.REQUESTED_AMOUNT"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "FORMATTED_AMOUNT",
+            "expression": "AmountUtils.formatCurrency(row1.REQUESTED_AMOUNT)"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "TERM_MONTHS",
+            "expression": "row1.TERM_MONTHS"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "INTEREST_RATE",
+            "expression": "row1.INTEREST_RATE"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "DTI_RATIO",
+            "expression": "AmountUtils.roundToDecimal(Var.dtiRatio, 4)"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "LTV_RATIO",
+            "expression": "Var.ltvRatio != null ? AmountUtils.roundToDecimal(Var.ltvRatio, 4) : null"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "APPLICATION_DATE",
+            "expression": "row1.APPLICATION_DATE"
+          },
+          {
+            "output_table": "loan_output",
+            "column": "INGESTED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "__var__",
+            "column": "monthlyPayment",
+            "expression": "AmountUtils.calculateMonthlyPayment(row1.REQUESTED_AMOUNT, row1.INTEREST_RATE, row1.TERM_MONTHS)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "dtiRatio",
+            "expression": "row1.ANNUAL_INCOME > 0 ? (Var.monthlyPayment * 12) / row1.ANNUAL_INCOME : 0"
+          },
+          {
+            "output_table": "__var__",
+            "column": "ltvRatio",
+            "expression": "row1.COLLATERAL_VALUE != null && row1.COLLATERAL_VALUE > 0 ? row1.REQUESTED_AMOUNT / row1.COLLATERAL_VALUE : null"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Load to Snowflake",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"STG_LOAN_APPLICATION\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tFileInputDelimited_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "loan_output",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "Numeric",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "loan_risk_scoring",
+    "domain": "loan_processing",
+    "file": "talend_jobs/loan_processing/loan_risk_scoring_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": ""
+          },
+          {
+            "name": "src_db_port",
+            "type": "id_String",
+            "value": "1521",
+            "comment": ""
+          },
+          {
+            "name": "src_db_name",
+            "type": "id_String",
+            "value": "LOANDB",
+            "comment": ""
+          },
+          {
+            "name": "risk_model_version",
+            "type": "id_String",
+            "value": "v3.2",
+            "comment": ""
+          },
+          {
+            "name": "high_risk_threshold",
+            "type": "id_Integer",
+            "value": "700",
+            "comment": ""
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Pending Loan Applications",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT \n  la.APPLICATION_ID, la.CUSTOMER_ID, la.LOAN_TYPE, \n  la.REQUESTED_AMOUNT, la.TERM_MONTHS, la.INTEREST_RATE, \n  la.ANNUAL_INCOME, la.CREDIT_SCORE, la.EMPLOYMENT_YEARS, \n  la.EXISTING_DEBT, la.COLLATERAL_VALUE, \n  cm.ACCOUNT_STATUS, cm.CUSTOMER_SINCE \nFROM LOAN_APPLICATION la \nJOIN CUSTOMER_MASTER cm ON la.CUSTOMER_ID = cm.CUSTOMER_ID \nWHERE la.STATUS = 'PENDING_REVIEW'\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "LOAN_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "REQUESTED_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "TERM_MONTHS",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "INTEREST_RATE",
+                "type": "id_Double",
+                "length": "6",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "ANNUAL_INCOME",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "CREDIT_SCORE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "EMPLOYMENT_YEARS",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "EXISTING_DEBT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "COLLATERAL_VALUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": true,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "ACCOUNT_STATUS",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CUSTOMER_SINCE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": "DATE"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "scored_loans",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "RISK_SCORE",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "RISK_TIER",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DTI_RATIO",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LTV_RATIO",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DECISION",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DECISION_FACTORS",
+                "type": "id_String",
+                "length": "200",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "SCORED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "scored_loans",
+            "column": "APPLICATION_ID",
+            "expression": "row1.APPLICATION_ID"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "RISK_SCORE",
+            "expression": "Var.compositeScore"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "RISK_TIER",
+            "expression": "Var.compositeScore >= 80 ? \"LOW\" : (Var.compositeScore >= 60 ? \"MEDIUM\" : \"HIGH\")"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "DTI_RATIO",
+            "expression": "AmountUtils.roundToDecimal(Var.dtiRatio, 4)"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "LTV_RATIO",
+            "expression": "Var.ltvRatio != null ? AmountUtils.roundToDecimal(Var.ltvRatio, 4) : null"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "DECISION",
+            "expression": "Var.compositeScore >= 70 ? \"AUTO_APPROVE\" : (Var.compositeScore >= 50 ? \"MANUAL_REVIEW\" : \"AUTO_DECLINE\")"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "DECISION_FACTORS",
+            "expression": "\"credit=\" + Var.creditFactor + \";employment=\" + Var.employmentFactor + \";dti=\" + Var.dtiFactor + \";model=\" + context.risk_model_version"
+          },
+          {
+            "output_table": "scored_loans",
+            "column": "SCORED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "__var__",
+            "column": "dtiRatio",
+            "expression": "row1.ANNUAL_INCOME > 0 ? ((AmountUtils.calculateMonthlyPayment(row1.REQUESTED_AMOUNT, row1.INTEREST_RATE, row1.TERM_MONTHS) * 12) + (row1.EXISTING_DEBT != null ? row1.EXISTING_DEBT : 0)) / row1.ANNUAL_INCOME : 999"
+          },
+          {
+            "output_table": "__var__",
+            "column": "ltvRatio",
+            "expression": "row1.COLLATERAL_VALUE != null && row1.COLLATERAL_VALUE > 0 ? row1.REQUESTED_AMOUNT / row1.COLLATERAL_VALUE : null"
+          },
+          {
+            "output_table": "__var__",
+            "column": "creditFactor",
+            "expression": "row1.CREDIT_SCORE >= 750 ? 100 : (row1.CREDIT_SCORE >= 700 ? 75 : (row1.CREDIT_SCORE >= 650 ? 50 : 25))"
+          },
+          {
+            "output_table": "__var__",
+            "column": "employmentFactor",
+            "expression": "row1.EMPLOYMENT_YEARS != null && row1.EMPLOYMENT_YEARS >= 5 ? 100 : (row1.EMPLOYMENT_YEARS != null && row1.EMPLOYMENT_YEARS >= 2 ? 75 : 50)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "dtiFactor",
+            "expression": "Var.dtiRatio < 0.36 ? 100 : (Var.dtiRatio < 0.43 ? 75 : (Var.dtiRatio < 0.50 ? 50 : 25))"
+          },
+          {
+            "output_table": "__var__",
+            "column": "compositeScore",
+            "expression": "(int)(Var.creditFactor * 0.40 + Var.employmentFactor * 0.20 + Var.dtiFactor * 0.40)"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Risk Scores to Snowflake",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"LOAN_RISK_SCORES\"",
+          "DATA_ACTION": "INSERT_OR_UPDATE"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "scored_loans",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "Numeric",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "loan_status_update",
+    "domain": "loan_processing",
+    "file": "talend_jobs/loan_processing/loan_status_update_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source database host"
+          },
+          {
+            "name": "batch_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "Batch date"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Recent Risk Scores",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT APPLICATION_ID, CUSTOMER_ID, DECISION, RISK_SCORE, SCORED_AT FROM LOAN_RISK_SCORES WHERE SCORED_AT >= DATEADD(day, -1, CURRENT_DATE())\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "APPLICATION_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "DECISION",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "RISK_SCORE",
+                "type": "id_Integer",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "SCORED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tDBRow_1",
+        "component_name": "tDBRow",
+        "label": "Update Source Status",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"UPDATE LOAN_APPLICATION SET STATUS = '\" + row1.DECISION + \"', RISK_SCORE = \" + row1.RISK_SCORE + \", LAST_UPDATED = SYSDATE WHERE APPLICATION_ID = '\" + row1.APPLICATION_ID + \"'\""
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tLogRow_1",
+        "component_name": "tLogRow",
+        "label": "Log Updates",
+        "parameters": {},
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tDBRow_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tDBRow_1",
+        "target": "tLogRow_1",
+        "label": "row2",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "address_standardization",
+    "domain": "data_quality",
+    "file": "talend_jobs/data_quality/address_standardization_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "input_dir",
+            "type": "id_String",
+            "value": "/data/incoming/address_updates/",
+            "comment": "Input directory"
+          },
+          {
+            "name": "tgt_schema",
+            "type": "id_String",
+            "value": "RAW",
+            "comment": "Target schema"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tFileInputDelimited_1",
+        "component_name": "tFileInputDelimited",
+        "label": "Address Corrections",
+        "parameters": {
+          "FILENAME": "context.input_dir + \"address_corrections.csv\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tFileInputDelimited_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "ADDRESS_LINE1",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ADDRESS_LINE2",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CITY",
+                "type": "id_String",
+                "length": "50",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ZIP_CODE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "standardized_output",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "ADDRESS_LINE1",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ADDRESS_LINE2",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CITY",
+                "type": "id_String",
+                "length": "50",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "STATE_CODE",
+                "type": "id_String",
+                "length": "2",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ZIP5",
+                "type": "id_String",
+                "length": "5",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "ZIP4",
+                "type": "id_String",
+                "length": "4",
+                "nullable": true,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "STANDARDIZED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "standardized_output",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "ADDRESS_LINE1",
+            "expression": "Var.normalizedAddr"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "ADDRESS_LINE2",
+            "expression": "row1.ADDRESS_LINE2 != null ? StringHandling.UPCASE(row1.ADDRESS_LINE2.trim()) : null"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "CITY",
+            "expression": "row1.CITY != null ? StringHandling.UPCASE(row1.CITY.trim()) : null"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "STATE_CODE",
+            "expression": "row1.STATE_CODE != null ? row1.STATE_CODE.toUpperCase().trim() : null"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "ZIP5",
+            "expression": "Var.zip5"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "ZIP4",
+            "expression": "Var.zip4"
+          },
+          {
+            "output_table": "standardized_output",
+            "column": "STANDARDIZED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "__var__",
+            "column": "normalizedAddr",
+            "expression": "row1.ADDRESS_LINE1 != null ? StringHandling.UPCASE(row1.ADDRESS_LINE1.trim()).replaceAll(\"\\bSTREET\\b\", \"ST\").replaceAll(\"\\bAVENUE\\b\", \"AVE\").replaceAll(\"\\bBOULEVARD\\b\", \"BLVD\").replaceAll(\"\\bDRIVE\\b\", \"DR\").replaceAll(\"\\bAPARTMENT\\b\", \"APT\").replaceAll(\"\\bSUITE\\b\", \"STE\") : null"
+          },
+          {
+            "output_table": "__var__",
+            "column": "zip5",
+            "expression": "row1.ZIP_CODE != null && row1.ZIP_CODE.length() >= 5 ? row1.ZIP_CODE.substring(0, 5) : row1.ZIP_CODE"
+          },
+          {
+            "output_table": "__var__",
+            "column": "zip4",
+            "expression": "row1.ZIP_CODE != null && row1.ZIP_CODE.contains(\"-\") && row1.ZIP_CODE.length() >= 10 ? row1.ZIP_CODE.substring(6) : null"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Standardized Addresses",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"STG_ADDRESS_STANDARDIZED\"",
+          "DATA_ACTION": "INSERT_OR_UPDATE"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tFileInputDelimited_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "standardized_output",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "StringHandling",
+      "TalendDate"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "dedup_customer",
+    "domain": "data_quality",
+    "file": "talend_jobs/data_quality/dedup_customer_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source host"
+          },
+          {
+            "name": "similarity_threshold",
+            "type": "id_Double",
+            "value": "0.85",
+            "comment": "Match threshold"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Potential Duplicates",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT c1.CUSTOMER_ID AS CUSTOMER_ID_1, c2.CUSTOMER_ID AS CUSTOMER_ID_2, c1.FULL_NAME AS NAME_1, c2.FULL_NAME AS NAME_2, c1.SSN_MASKED AS SSN_1, c2.SSN_MASKED AS SSN_2, c1.EMAIL AS EMAIL_1, c2.EMAIL AS EMAIL_2 FROM STG_CUSTOMER c1 JOIN STG_CUSTOMER c2 ON c1.CUSTOMER_ID < c2.CUSTOMER_ID AND (c1.SSN_MASKED = c2.SSN_MASKED OR c1.EMAIL = c2.EMAIL OR JAROWINKLER_SIMILARITY(c1.FULL_NAME, c2.FULL_NAME) > 85)\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID_1",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CUSTOMER_ID_2",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "NAME_1",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "NAME_2",
+                "type": "id_String",
+                "length": "101",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "SSN_1",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "SSN_2",
+                "type": "id_String",
+                "length": "11",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "EMAIL_1",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "EMAIL_2",
+                "type": "id_String",
+                "length": "100",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "dedup_results",
+            "columns": [
+              {
+                "name": "MASTER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DUPLICATE_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "MATCH_TYPE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CONFIDENCE",
+                "type": "id_Double",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DETECTED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          },
+          {
+            "connector": "FLOW",
+            "name": "dedup_log",
+            "columns": [
+              {
+                "name": "CUSTOMER_ID_1",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID_2",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "MATCH_DETAILS",
+                "type": "id_String",
+                "length": "200",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "dedup_results",
+            "column": "MASTER_ID",
+            "expression": "row1.CUSTOMER_ID_1"
+          },
+          {
+            "output_table": "dedup_results",
+            "column": "DUPLICATE_ID",
+            "expression": "row1.CUSTOMER_ID_2"
+          },
+          {
+            "output_table": "dedup_results",
+            "column": "MATCH_TYPE",
+            "expression": "Var.matchType"
+          },
+          {
+            "output_table": "dedup_results",
+            "column": "CONFIDENCE",
+            "expression": "Var.confidence"
+          },
+          {
+            "output_table": "dedup_results",
+            "column": "DETECTED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "dedup_log",
+            "column": "CUSTOMER_ID_1",
+            "expression": "row1.CUSTOMER_ID_1"
+          },
+          {
+            "output_table": "dedup_log",
+            "column": "CUSTOMER_ID_2",
+            "expression": "row1.CUSTOMER_ID_2"
+          },
+          {
+            "output_table": "dedup_log",
+            "column": "MATCH_DETAILS",
+            "expression": "\"SSN=\" + Var.ssnMatch + \";EMAIL=\" + Var.emailMatch + \";NAME=\" + Var.nameMatch + \";conf=\" + Var.confidence"
+          },
+          {
+            "output_table": "__var__",
+            "column": "ssnMatch",
+            "expression": "row1.SSN_1 != null && row1.SSN_2 != null && row1.SSN_1.equals(row1.SSN_2)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "emailMatch",
+            "expression": "row1.EMAIL_1 != null && row1.EMAIL_2 != null && row1.EMAIL_1.equalsIgnoreCase(row1.EMAIL_2)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "nameMatch",
+            "expression": "StringHandling.UPCASE(row1.NAME_1).equals(StringHandling.UPCASE(row1.NAME_2))"
+          },
+          {
+            "output_table": "__var__",
+            "column": "matchType",
+            "expression": "Var.ssnMatch ? \"SSN\" : (Var.emailMatch ? \"EMAIL\" : \"NAME\")"
+          },
+          {
+            "output_table": "__var__",
+            "column": "confidence",
+            "expression": "Var.ssnMatch ? 0.99 : (Var.emailMatch ? 0.95 : 0.85)"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Dedup Results",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"CUSTOMER_DEDUP_RESULTS\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tLogRow_1",
+        "component_name": "tLogRow",
+        "label": "Log Matches",
+        "parameters": {},
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "dedup_results",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tLogRow_1",
+        "label": "dedup_log",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "StringHandling",
+      "TalendDate",
+      "AccountValidator"
+    ],
+    "component_count": 4,
+    "connection_count": 3
+  },
+  {
+    "job_name": "payment_discrepancy",
+    "domain": "payment_reconciliation",
+    "file": "talend_jobs/payment_reconciliation/payment_discrepancy_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "output_dir",
+            "type": "id_String",
+            "value": "/data/reports/discrepancies/",
+            "comment": "Output directory"
+          },
+          {
+            "name": "report_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "Reporting date"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Unmatched Payments",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT PAYMENT_ID, LOAN_ID, CUSTOMER_ID, PAYMENT_AMOUNT, AMOUNT_DUE, VARIANCE, MATCH_STATUS, RECONCILED_AT FROM PAYMENT_RECONCILIATION WHERE MATCH_STATUS != 'MATCHED' AND RECONCILED_AT >= DATEADD(day, -1, CURRENT_DATE())\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "PAYMENT_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "AMOUNT_DUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "VARIANCE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "MATCH_STATUS",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "RECONCILED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": "TIMESTAMP"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "discrepancy_report",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "PAYMENT_AMOUNT",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "AMOUNT_DUE",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "VARIANCE",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "DISCREPANCY_TYPE",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "REPORT_DATE",
+                "type": "id_String",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "discrepancy_report",
+            "column": "PAYMENT_ID",
+            "expression": "row1.PAYMENT_ID"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "LOAN_ID",
+            "expression": "row1.LOAN_ID"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "PAYMENT_AMOUNT",
+            "expression": "AmountUtils.formatCurrency(row1.PAYMENT_AMOUNT)"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "AMOUNT_DUE",
+            "expression": "AmountUtils.formatCurrency(row1.AMOUNT_DUE)"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "VARIANCE",
+            "expression": "AmountUtils.formatCurrency(row1.VARIANCE)"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "DISCREPANCY_TYPE",
+            "expression": "row1.MATCH_STATUS"
+          },
+          {
+            "output_table": "discrepancy_report",
+            "column": "REPORT_DATE",
+            "expression": "context.report_date"
+          }
+        ]
+      },
+      {
+        "unique_name": "tFileOutputDelimited_1",
+        "component_name": "tFileOutputDelimited",
+        "label": "Discrepancy CSV",
+        "parameters": {
+          "FILENAME": "context.output_dir + \"discrepancy_report_\" + context.report_date + \".csv\""
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tFileOutputDelimited_1",
+        "label": "discrepancy_report",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 3,
+    "connection_count": 2
+  },
+  {
+    "job_name": "payment_match",
+    "domain": "payment_reconciliation",
+    "file": "talend_jobs/payment_reconciliation/payment_match_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source database host"
+          },
+          {
+            "name": "recon_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "Reconciliation date"
+          },
+          {
+            "name": "match_tolerance",
+            "type": "id_Double",
+            "value": "0.01",
+            "comment": "Tolerance amount for matching"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Incoming Payments",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT PAYMENT_ID, LOAN_ID, CUSTOMER_ID, PAYMENT_AMOUNT, PAYMENT_DATE, PAYMENT_METHOD, REFERENCE_NUM FROM INCOMING_PAYMENTS WHERE PAYMENT_DATE = TO_DATE(context.recon_date, 'YYYY-MM-DD') AND RECONCILED = 'N'\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "PAYMENT_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "PAYMENT_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "PAYMENT_METHOD",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "REFERENCE_NUM",
+                "type": "id_String",
+                "length": "30",
+                "nullable": true,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tDBInput_2",
+        "component_name": "tDBInput",
+        "label": "Outstanding Balances",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"SELECT LOAN_ID, CUSTOMER_ID, OUTSTANDING_BALANCE, MONTHLY_PAYMENT_DUE, DUE_DATE, DAYS_PAST_DUE FROM LOAN_BALANCE WHERE DUE_DATE <= TO_DATE(context.recon_date, 'YYYY-MM-DD')\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_2",
+            "columns": [
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR2"
+              },
+              {
+                "name": "OUTSTANDING_BALANCE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "MONTHLY_PAYMENT_DUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "DUE_DATE",
+                "type": "id_Date",
+                "length": "10",
+                "nullable": false,
+                "key": false,
+                "sourceType": "DATE"
+              },
+              {
+                "name": "DAYS_PAST_DUE",
+                "type": "id_Integer",
+                "length": "5",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "matched_payments",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "PAYMENT_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "AMOUNT_DUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "VARIANCE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "MATCH_STATUS",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "RECONCILED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "matched_payments",
+            "column": "PAYMENT_ID",
+            "expression": "row1.PAYMENT_ID"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "LOAN_ID",
+            "expression": "row1.LOAN_ID"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "CUSTOMER_ID",
+            "expression": "row1.CUSTOMER_ID"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "PAYMENT_AMOUNT",
+            "expression": "AmountUtils.roundToDecimal(row1.PAYMENT_AMOUNT, 2)"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "AMOUNT_DUE",
+            "expression": "AmountUtils.roundToDecimal(row2.MONTHLY_PAYMENT_DUE, 2)"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "VARIANCE",
+            "expression": "AmountUtils.roundToDecimal(Var.variance, 2)"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "MATCH_STATUS",
+            "expression": "Var.isExactMatch ? \"MATCHED\" : (Var.isOverpayment ? \"OVERPAYMENT\" : \"UNDERPAYMENT\")"
+          },
+          {
+            "output_table": "matched_payments",
+            "column": "RECONCILED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          },
+          {
+            "output_table": "__var__",
+            "column": "variance",
+            "expression": "Math.abs(row1.PAYMENT_AMOUNT - row2.MONTHLY_PAYMENT_DUE)"
+          },
+          {
+            "output_table": "__var__",
+            "column": "isExactMatch",
+            "expression": "Var.variance <= context.match_tolerance"
+          },
+          {
+            "output_table": "__var__",
+            "column": "isOverpayment",
+            "expression": "row1.PAYMENT_AMOUNT > row2.MONTHLY_PAYMENT_DUE + context.match_tolerance"
+          },
+          {
+            "output_table": "__var__",
+            "column": "isUnderpayment",
+            "expression": "row1.PAYMENT_AMOUNT < row2.MONTHLY_PAYMENT_DUE - context.match_tolerance"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Reconciliation Results",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"PAYMENT_RECONCILIATION\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tDBInput_2",
+        "target": "tMap_1",
+        "label": "row2",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "matched_payments",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "Numeric",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 4,
+    "connection_count": 3
+  },
+  {
+    "job_name": "payment_settlement",
+    "domain": "payment_reconciliation",
+    "file": "talend_jobs/payment_reconciliation/payment_settlement_0.1.item",
+    "contexts": [
+      {
+        "name": "Default",
+        "parameters": [
+          {
+            "name": "src_db_host",
+            "type": "id_String",
+            "value": "db-source-prod.internal",
+            "comment": "Source host"
+          },
+          {
+            "name": "settlement_date",
+            "type": "id_String",
+            "value": "",
+            "comment": "Settlement date"
+          },
+          {
+            "name": "auto_settle_threshold",
+            "type": "id_Double",
+            "value": "5000.00",
+            "comment": "Auto-settle limit"
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "unique_name": "tDBInput_1",
+        "component_name": "tDBInput",
+        "label": "Matched Unsettled",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "QUERY": "\"SELECT pr.PAYMENT_ID, pr.LOAN_ID, pr.CUSTOMER_ID, pr.PAYMENT_AMOUNT, pr.AMOUNT_DUE, pr.VARIANCE, pr.MATCH_STATUS FROM PAYMENT_RECONCILIATION pr WHERE pr.MATCH_STATUS = 'MATCHED' AND pr.SETTLEMENT_STATUS IS NULL\""
+        },
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "tDBInput_1",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "CUSTOMER_ID",
+                "type": "id_String",
+                "length": "12",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              },
+              {
+                "name": "PAYMENT_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "AMOUNT_DUE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "VARIANCE",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "NUMBER"
+              },
+              {
+                "name": "MATCH_STATUS",
+                "type": "id_String",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": "VARCHAR"
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tMap_1",
+        "component_name": "tMap",
+        "label": "",
+        "parameters": {},
+        "schemas": [
+          {
+            "connector": "FLOW",
+            "name": "settlement_output",
+            "columns": [
+              {
+                "name": "PAYMENT_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": true,
+                "sourceType": ""
+              },
+              {
+                "name": "LOAN_ID",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "SETTLEMENT_AMOUNT",
+                "type": "id_Double",
+                "length": "15",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "SETTLEMENT_TYPE",
+                "type": "id_String",
+                "length": "20",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              },
+              {
+                "name": "SETTLED_AT",
+                "type": "id_Date",
+                "length": "19",
+                "nullable": false,
+                "key": false,
+                "sourceType": ""
+              }
+            ]
+          }
+        ],
+        "tmap_expressions": [
+          {
+            "output_table": "settlement_output",
+            "column": "PAYMENT_ID",
+            "expression": "row1.PAYMENT_ID"
+          },
+          {
+            "output_table": "settlement_output",
+            "column": "LOAN_ID",
+            "expression": "row1.LOAN_ID"
+          },
+          {
+            "output_table": "settlement_output",
+            "column": "SETTLEMENT_AMOUNT",
+            "expression": "AmountUtils.roundToDecimal(row1.PAYMENT_AMOUNT, 2)"
+          },
+          {
+            "output_table": "settlement_output",
+            "column": "SETTLEMENT_TYPE",
+            "expression": "row1.PAYMENT_AMOUNT <= context.auto_settle_threshold ? \"AUTO\" : \"MANUAL_REVIEW\""
+          },
+          {
+            "output_table": "settlement_output",
+            "column": "SETTLED_AT",
+            "expression": "TalendDate.getCurrentDate()"
+          }
+        ]
+      },
+      {
+        "unique_name": "tDBOutput_1",
+        "component_name": "tDBOutput",
+        "label": "Settlement Records",
+        "parameters": {
+          "DB_VERSION": "SNOWFLAKE",
+          "TABLE": "\"PAYMENT_SETTLEMENT\"",
+          "DATA_ACTION": "INSERT"
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      },
+      {
+        "unique_name": "tDBRow_1",
+        "component_name": "tDBRow",
+        "label": "Mark Reconciled",
+        "parameters": {
+          "DB_VERSION": "ORACLE_12",
+          "QUERY": "\"UPDATE INCOMING_PAYMENTS SET RECONCILED = 'Y', RECONCILED_DATE = SYSDATE WHERE PAYMENT_ID = '\" + row1.PAYMENT_ID + \"'\""
+        },
+        "schemas": [],
+        "tmap_expressions": []
+      }
+    ],
+    "connections": [
+      {
+        "source": "tDBInput_1",
+        "target": "tMap_1",
+        "label": "row1",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBOutput_1",
+        "label": "settlement_output",
+        "connector": "FLOW"
+      },
+      {
+        "source": "tMap_1",
+        "target": "tDBRow_1",
+        "label": "row3",
+        "connector": "FLOW"
+      }
+    ],
+    "routines": [
+      "DataOperation",
+      "TalendDate",
+      "AmountUtils"
+    ],
+    "component_count": 4,
+    "connection_count": 3
+  }
+]

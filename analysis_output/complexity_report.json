@@ -1,0 +1,221 @@
+{
+  "jobs": [
+    {
+      "job_name": "cfpb_extract",
+      "domain": "regulatory_reporting",
+      "complexity_score": 81,
+      "tier": "COMPLEX",
+      "effort_hours": 28.3,
+      "factors": [
+        "5 components",
+        "4 connections (multi-flow)",
+        "Complex tMap expressions (score=47)",
+        "tMap joins 3 input sources",
+        "Custom routines: AmountUtils, DateFormatUtils"
+      ],
+      "component_count": 5,
+      "expression_count": 11,
+      "expression_complexity_score": 47
+    },
+    {
+      "job_name": "customer_validation",
+      "domain": "customer_accounts",
+      "complexity_score": 68,
+      "tier": "COMPLEX",
+      "effort_hours": 24.4,
+      "factors": [
+        "Complex tMap expressions (score=62)",
+        "tMap has 2 output flows (split/reject)",
+        "Custom routines: AccountValidator",
+        "6 context parameters",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 4,
+      "expression_count": 15,
+      "expression_complexity_score": 62
+    },
+    {
+      "job_name": "payment_match",
+      "domain": "payment_reconciliation",
+      "complexity_score": 58,
+      "tier": "MODERATE",
+      "effort_hours": 13.6,
+      "factors": [
+        "Complex tMap expressions (score=34)",
+        "tMap joins 2 input sources",
+        "Custom routines: AmountUtils",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 4,
+      "expression_count": 12,
+      "expression_complexity_score": 34
+    },
+    {
+      "job_name": "dedup_customer",
+      "domain": "data_quality",
+      "complexity_score": 53,
+      "tier": "MODERATE",
+      "effort_hours": 12.6,
+      "factors": [
+        "Complex tMap expressions (score=38)",
+        "tMap has 2 output flows (split/reject)",
+        "Custom routines: AccountValidator"
+      ],
+      "component_count": 4,
+      "expression_count": 13,
+      "expression_complexity_score": 38
+    },
+    {
+      "job_name": "customer_extract",
+      "domain": "customer_accounts",
+      "complexity_score": 51,
+      "tier": "MODERATE",
+      "effort_hours": 12.2,
+      "factors": [
+        "Moderate tMap expressions (score=30)",
+        "Custom routines: DateFormatUtils, AccountValidator",
+        "14 context parameters",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 3,
+      "expression_count": 11,
+      "expression_complexity_score": 30
+    },
+    {
+      "job_name": "loan_risk_scoring",
+      "domain": "loan_processing",
+      "complexity_score": 48,
+      "tier": "MODERATE",
+      "effort_hours": 11.6,
+      "factors": [
+        "Complex tMap expressions (score=113)",
+        "Custom routines: AmountUtils",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 3,
+      "expression_count": 15,
+      "expression_complexity_score": 113
+    },
+    {
+      "job_name": "payment_settlement",
+      "domain": "payment_reconciliation",
+      "complexity_score": 48,
+      "tier": "MODERATE",
+      "effort_hours": 11.6,
+      "factors": [
+        "Moderate tMap expressions (score=16)",
+        "Custom routines: AmountUtils",
+        "Uses tDBRow (dynamic SQL execution)",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 4,
+      "expression_count": 5,
+      "expression_complexity_score": 16
+    },
+    {
+      "job_name": "occ_compliance_report",
+      "domain": "regulatory_reporting",
+      "complexity_score": 38,
+      "tier": "MODERATE",
+      "effort_hours": 9.6,
+      "factors": [
+        "Complex tMap expressions (score=56)",
+        "Custom routines: AmountUtils"
+      ],
+      "component_count": 3,
+      "expression_count": 8,
+      "expression_complexity_score": 56
+    },
+    {
+      "job_name": "loan_application_ingest",
+      "domain": "loan_processing",
+      "complexity_score": 38,
+      "tier": "MODERATE",
+      "effort_hours": 9.6,
+      "factors": [
+        "Complex tMap expressions (score=50)",
+        "Custom routines: AmountUtils"
+      ],
+      "component_count": 3,
+      "expression_count": 14,
+      "expression_complexity_score": 50
+    },
+    {
+      "job_name": "address_standardization",
+      "domain": "data_quality",
+      "complexity_score": 30,
+      "tier": "MODERATE",
+      "effort_hours": 8.0,
+      "factors": [
+        "Complex tMap expressions (score=94)"
+      ],
+      "component_count": 3,
+      "expression_count": 11,
+      "expression_complexity_score": 94
+    },
+    {
+      "job_name": "customer_dimension_load",
+      "domain": "customer_accounts",
+      "complexity_score": 28,
+      "tier": "STRAIGHTFORWARD",
+      "effort_hours": 3.8,
+      "factors": [
+        "Moderate tMap expressions (score=19)",
+        "Custom routines: DateFormatUtils"
+      ],
+      "component_count": 3,
+      "expression_count": 10,
+      "expression_complexity_score": 19
+    },
+    {
+      "job_name": "loan_status_update",
+      "domain": "loan_processing",
+      "complexity_score": 25,
+      "tier": "STRAIGHTFORWARD",
+      "effort_hours": 3.5,
+      "factors": [
+        "Uses tDBRow (dynamic SQL execution)",
+        "Cross-database: ORACLE_12, SNOWFLAKE"
+      ],
+      "component_count": 3,
+      "expression_count": 0,
+      "expression_complexity_score": 0
+    },
+    {
+      "job_name": "payment_discrepancy",
+      "domain": "payment_reconciliation",
+      "complexity_score": 18,
+      "tier": "STRAIGHTFORWARD",
+      "effort_hours": 2.8,
+      "factors": [
+        "Custom routines: AmountUtils"
+      ],
+      "component_count": 3,
+      "expression_count": 8,
+      "expression_complexity_score": 12
+    },
+    {
+      "job_name": "regulatory_archive",
+      "domain": "regulatory_reporting",
+      "complexity_score": 8,
+      "tier": "STRAIGHTFORWARD",
+      "effort_hours": 1.8,
+      "factors": [
+        "Custom routines: DateFormatUtils"
+      ],
+      "component_count": 2,
+      "expression_count": 0,
+      "expression_complexity_score": 0
+    }
+  ],
+  "summary": {
+    "total_jobs": 14,
+    "tier_distribution": {
+      "STRAIGHTFORWARD": 4,
+      "MODERATE": 8,
+      "COMPLEX": 2
+    },
+    "total_effort_hours": 153.4,
+    "avg_effort_hours": 11.0
+  }
+}

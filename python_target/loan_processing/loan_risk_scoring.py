@@ -132,10 +132,12 @@ def run(session: Session, config: dict) -> None:
         "DTI_RATIO", "LTV_RATIO", "DECISION", "DECISION_FACTORS", "SCORED_AT",
     )
 
-    # tDBOutput_1: INSERT_OR_UPDATE → MERGE
+    # tDBOutput_1: INSERT_OR_UPDATE → stage to temp table then MERGE
+    df_out.write.mode("overwrite").save_as_table("__LOAN_RISK_SCORES_STG")
+
     session.sql("""
         MERGE INTO LOAN_RISK_SCORES tgt
-        USING __df_scored src ON tgt.APPLICATION_ID = src.APPLICATION_ID
+        USING __LOAN_RISK_SCORES_STG src ON tgt.APPLICATION_ID = src.APPLICATION_ID
         WHEN MATCHED THEN UPDATE SET
             tgt.RISK_SCORE = src.RISK_SCORE,
             tgt.RISK_TIER = src.RISK_TIER,
@@ -152,10 +154,7 @@ def run(session: Session, config: dict) -> None:
             src.DTI_RATIO, src.LTV_RATIO, src.DECISION, src.DECISION_FACTORS,
             src.SCORED_AT
         )
-    """)
-
-    # Fallback: direct write when temp table staging is unavailable
-    df_out.write.mode("overwrite").save_as_table("LOAN_RISK_SCORES")
+    """).collect()
     logger.info("loan_risk_scoring complete")
 
 

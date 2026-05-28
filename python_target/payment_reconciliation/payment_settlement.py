@@ -46,13 +46,19 @@ def run(session: Session, config: dict) -> None:
         "SETTLEMENT_TYPE", "SETTLED_AT",
     )
 
-    # tDBOutput_1: INSERT settlement records
-    df_out.write.mode("append").save_as_table("PAYMENT_SETTLEMENT")
+    # Stage current batch to temp table for scoped MERGE
+    df_out.write.mode("overwrite").save_as_table("__PAYMENT_SETTLEMENT_STG")
 
-    # tDBRow_1: mark source payments as reconciled (batch MERGE)
+    # tDBOutput_1: INSERT settlement records from staging
+    session.sql("""
+        INSERT INTO PAYMENT_SETTLEMENT
+        SELECT * FROM __PAYMENT_SETTLEMENT_STG
+    """).collect()
+
+    # tDBRow_1: mark only current batch as reconciled (scoped MERGE)
     session.sql("""
         MERGE INTO INCOMING_PAYMENTS tgt
-        USING PAYMENT_SETTLEMENT src ON tgt.PAYMENT_ID = src.PAYMENT_ID
+        USING __PAYMENT_SETTLEMENT_STG src ON tgt.PAYMENT_ID = src.PAYMENT_ID
         WHEN MATCHED THEN UPDATE SET
             tgt.RECONCILED = 'Y',
             tgt.RECONCILED_DATE = CURRENT_TIMESTAMP()

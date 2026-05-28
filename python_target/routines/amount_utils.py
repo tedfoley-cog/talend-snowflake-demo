@@ -15,9 +15,9 @@ def round_to_decimal(value: float, places: int) -> float:
 def format_currency(amount: float) -> str:
     try:
         locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-    except locale.Error:
-        pass
-    return locale.currency(amount, grouping=True)
+        return locale.currency(amount, grouping=True)
+    except (locale.Error, ValueError):
+        return f"${amount:,.2f}"
 
 
 def calculate_monthly_payment(

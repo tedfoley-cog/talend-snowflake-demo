@@ -76,9 +76,29 @@ def run(session: Session, config: dict) -> None:
     df = session.create_dataframe(rows)
     df = df.with_column("STANDARDIZED_AT", F.current_timestamp())
 
-    # tDBOutput_1: INSERT_OR_UPDATE → MERGE
+    # tDBOutput_1: INSERT_OR_UPDATE → stage to temp table then MERGE
     table = f"{tgt_schema}.STG_ADDRESS_STANDARDIZED"
-    df.write.mode("overwrite").save_as_table(table)
+    df.write.mode("overwrite").save_as_table("__STG_ADDRESS_STD_TMP")
+
+    session.sql(f"""
+        MERGE INTO {table} tgt
+        USING __STG_ADDRESS_STD_TMP src ON tgt.CUSTOMER_ID = src.CUSTOMER_ID
+        WHEN MATCHED THEN UPDATE SET
+            tgt.ADDRESS_LINE1 = src.ADDRESS_LINE1,
+            tgt.ADDRESS_LINE2 = src.ADDRESS_LINE2,
+            tgt.CITY = src.CITY,
+            tgt.STATE_CODE = src.STATE_CODE,
+            tgt.ZIP5 = src.ZIP5,
+            tgt.ZIP4 = src.ZIP4,
+            tgt.STANDARDIZED_AT = src.STANDARDIZED_AT
+        WHEN NOT MATCHED THEN INSERT (
+            CUSTOMER_ID, ADDRESS_LINE1, ADDRESS_LINE2, CITY,
+            STATE_CODE, ZIP5, ZIP4, STANDARDIZED_AT
+        ) VALUES (
+            src.CUSTOMER_ID, src.ADDRESS_LINE1, src.ADDRESS_LINE2, src.CITY,
+            src.STATE_CODE, src.ZIP5, src.ZIP4, src.STANDARDIZED_AT
+        )
+    """).collect()
     logger.info("address_standardization complete — %d records → %s", len(rows), table)
 
 

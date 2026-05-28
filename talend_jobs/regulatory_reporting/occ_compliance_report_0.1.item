@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMapper="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default" jobType="Standard">
+  <context confirmationNeeded="false" name="Default">
+    <contextParameter comment="Source host" name="src_db_host" prompt="src_db_host?" promptNeeded="false" type="id_String" value="db-source-prod.internal"/>
+    <contextParameter comment="Reporting quarter" name="quarter" prompt="quarter?" promptNeeded="false" type="id_String" value="Q1-2024"/>
+  </context>
+  <parameters>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0" show="false"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_Y" value="0" show="false"/>
+    <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
+    <elementParameter field="CHECK" name="STATANDLOG_USE_PROJECT_SETTINGS" value="true" show="false"/>
+    <routinesParameter id="_x0AbCdEfGh" name="DataOperation"/>
+    <routinesParameter id="_x1AbCdEfGh" name="TalendDate"/>
+    <routinesParameter id="_x2AbCdEfGh" name="AmountUtils"/>
+  </parameters>
+  <node componentName="tDBInput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="96" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;SELECT LOAN_TYPE, COUNT(*) AS TOTAL_LOANS, SUM(REQUESTED_AMOUNT) AS TOTAL_VOLUME, AVG(RISK_SCORE) AS AVG_RISK, COUNT(CASE WHEN DECISION = 'AUTO_DECLINE' THEN 1 END) AS DECLINE_COUNT, COUNT(CASE WHEN DAYS_PAST_DUE > 30 THEN 1 END) AS DELINQUENT_30, COUNT(CASE WHEN DAYS_PAST_DUE > 60 THEN 1 END) AS DELINQUENT_60, COUNT(CASE WHEN DAYS_PAST_DUE > 90 THEN 1 END) AS DELINQUENT_90 FROM LOAN_PORTFOLIO_VIEW GROUP BY LOAN_TYPE&quot;"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Portfolio Summary&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="tDBInput_1">
+      <column comment="" key="false" length="20" name="LOAN_TYPE" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="TOTAL_LOANS" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="TOTAL_VOLUME" nullable="false" sourceType="NUMBER" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="AVG_RISK" nullable="true" sourceType="NUMBER" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DECLINE_COUNT" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENT_30" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENT_60" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENT_90" nullable="false" sourceType="NUMBER" type="id_Integer" usefulColumn="true"/>
+    </metadata>
+  </node>
+  <node componentName="tMap" componentVersion="2.1" offsetLabelX="0" offsetLabelY="0" posX="320" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tMap_1" show="false"/>
+    <elementParameter field="EXTERNAL" name="MAP" value=""/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="occ_output">
+      <column comment="" key="false" length="20" name="LOAN_TYPE" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="TOTAL_LOANS" nullable="false" type="id_Integer" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="TOTAL_VOLUME" nullable="false" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DECLINE_RATE" nullable="false" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENCY_RATE_30" nullable="false" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENCY_RATE_60" nullable="false" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="DELINQUENCY_RATE_90" nullable="false" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="QUARTER" nullable="false" type="id_String" usefulColumn="true"/>
+    </metadata>
+    <nodeData xsi:type="TalendMapper:MapperData">
+      <uiProperties shellMaximized="true"/>
+      <varTables sizeState="INTERMEDIATE" name="Var" minimized="true"/>
+      <outputTables sizeState="INTERMEDIATE" name="occ_output">
+        <mapperTableEntries name="LOAN_TYPE" expression="row1.LOAN_TYPE" type="id_String" nullable="false"/>
+        <mapperTableEntries name="TOTAL_LOANS" expression="row1.TOTAL_LOANS" type="id_Integer" nullable="false"/>
+        <mapperTableEntries name="TOTAL_VOLUME" expression="row1.TOTAL_VOLUME" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="DECLINE_RATE" expression="row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DECLINE_COUNT / row1.TOTAL_LOANS, 4) : 0" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="DELINQUENCY_RATE_30" expression="row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_30 / row1.TOTAL_LOANS, 4) : 0" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="DELINQUENCY_RATE_60" expression="row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_60 / row1.TOTAL_LOANS, 4) : 0" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="DELINQUENCY_RATE_90" expression="row1.TOTAL_LOANS > 0 ? AmountUtils.roundToDecimal((double)row1.DELINQUENT_90 / row1.TOTAL_LOANS, 4) : 0" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="QUARTER" expression="context.quarter" type="id_String" nullable="false"/>
+      </outputTables>
+      <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
+        <mapperTableEntries name="LOAN_TYPE" type="id_String" nullable="false"/>
+        <mapperTableEntries name="TOTAL_LOANS" type="id_Integer" nullable="false"/>
+        <mapperTableEntries name="TOTAL_VOLUME" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="AVG_RISK" type="id_Double" nullable="true"/>
+        <mapperTableEntries name="DECLINE_COUNT" type="id_Integer" nullable="false"/>
+        <mapperTableEntries name="DELINQUENT_30" type="id_Integer" nullable="false"/>
+        <mapperTableEntries name="DELINQUENT_60" type="id_Integer" nullable="false"/>
+        <mapperTableEntries name="DELINQUENT_90" type="id_Integer" nullable="false"/>
+      </inputTables>
+    </nodeData>
+  </node>
+  <node componentName="tDBOutput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="544" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBOutput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="DBTABLE" name="TABLE" value="&quot;OCC_COMPLIANCE_REPORT&quot;"/>
+    <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;OCC Report Table&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+  </node>
+  <connection connectorName="FLOW" label="row1" lineStyle="0" metaname="tDBInput_1" offsetLabelX="0" offsetLabelY="0" source="tDBInput_1" target="tMap_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="row1" show="false"/>
+  </connection>
+  <connection connectorName="FLOW" label="occ_output" lineStyle="0" metaname="occ_output" offsetLabelX="0" offsetLabelY="0" source="tMap_1" target="tDBOutput_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="occ_output" show="false"/>
+  </connection>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="92;131;150" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="207;226;236"/>
+  </subjob>
+</talendfile:ProcessType>

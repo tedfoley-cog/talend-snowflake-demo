@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Talend-to-Snowflake Migration — Demo Flow</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+    }
+    .mermaid {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 1200px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "default",
+      flowchart: {
+        htmlLabels: false,
+        curve: "basis"
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="mermaid">
+flowchart TD
+  REPO[Talend Job Definitions]
+  PROMPT[Prompt Devin]
+  PARSE[Parse XML Components]
+  DEP[Build Dependency Graph]
+  CLASSIFY[Classify Complexity]
+  MANIFEST[Generate Migration Manifest]
+
+  subgraph DISCOVER [Discovery Phase]
+    direction LR
+    PARSE
+    DEP
+    CLASSIFY
+    MANIFEST
+  end
+
+  DASH[Populate Dashboard]
+  BROWSER[Open Dashboard in Browser]
+
+  subgraph CONVERT [Conversion Phase]
+    direction LR
+    RULES[Apply Translation Rules]
+    TMAP[Rewrite tMap Expressions]
+    ROUTINES[Convert Java Routines]
+    TESTS[Generate Test Scaffolding]
+  end
+
+  PR[Open PR with Converted Code]
+
+  REPO --> PROMPT
+  PROMPT --> PARSE
+  PARSE --> DEP
+  DEP --> CLASSIFY
+  CLASSIFY --> MANIFEST
+  MANIFEST --> DASH
+  DASH --> BROWSER
+  BROWSER --> RULES
+  RULES --> TMAP
+  TMAP --> ROUTINES
+  ROUTINES --> TESTS
+  TESTS --> PR
+
+  classDef repoNode     fill:#f0fdf4,stroke:#059669,stroke-width:2px,color:#064e3b
+  classDef promptNode   fill:#e0e7ff,stroke:#6366f1,stroke-width:2px,color:#312e81
+  classDef parseNode    fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+  classDef discoverNode fill:#f0f9ff,stroke:#0ea5e9,stroke-width:1.5px,color:#0c4a6e
+  classDef dashNode     fill:#d1fae5,stroke:#10b981,stroke-width:2px,color:#064e3b
+  classDef browserNode  fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#581c87
+  classDef convertNode  fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#7c2d12
+  classDef prNode       fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#831843
+
+  class REPO repoNode
+  class PROMPT promptNode
+  class PARSE,DEP,CLASSIFY,MANIFEST discoverNode
+  class DASH dashNode
+  class BROWSER browserNode
+  class RULES,TMAP,ROUTINES,TESTS convertNode
+  class PR prNode
+  </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMapper="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default" jobType="Standard">
+  <context confirmationNeeded="false" name="Default">
+    <contextParameter comment="Output directory" name="output_dir" prompt="output_dir?" promptNeeded="false" type="id_String" value="/data/reports/discrepancies/"/>
+    <contextParameter comment="Reporting date" name="report_date" prompt="report_date?" promptNeeded="false" type="id_String" value=""/>
+  </context>
+  <parameters>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0" show="false"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_Y" value="0" show="false"/>
+    <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
+    <elementParameter field="CHECK" name="STATANDLOG_USE_PROJECT_SETTINGS" value="true" show="false"/>
+    <routinesParameter id="_pD1aBcDeFg" name="DataOperation"/>
+    <routinesParameter id="_pD2aBcDeFg" name="TalendDate"/>
+    <routinesParameter id="_pD3aBcDeFg" name="AmountUtils"/>
+  </parameters>
+  <node componentName="tDBInput" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="96" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="SNOWFLAKE"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;SELECT PAYMENT_ID, LOAN_ID, CUSTOMER_ID, PAYMENT_AMOUNT, AMOUNT_DUE, VARIANCE, MATCH_STATUS, RECONCILED_AT FROM PAYMENT_RECONCILIATION WHERE MATCH_STATUS != 'MATCHED' AND RECONCILED_AT >= DATEADD(day, -1, CURRENT_DATE())&quot;"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Unmatched Payments&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="tDBInput_1">
+      <column comment="" key="true" length="20" name="PAYMENT_ID" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="LOAN_ID" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="12" name="CUSTOMER_ID" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="PAYMENT_AMOUNT" nullable="false" sourceType="NUMBER" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="AMOUNT_DUE" nullable="false" sourceType="NUMBER" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="VARIANCE" nullable="false" sourceType="NUMBER" type="id_Double" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="MATCH_STATUS" nullable="false" sourceType="VARCHAR" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="19" name="RECONCILED_AT" nullable="false" pattern="&quot;yyyy-MM-dd HH:mm:ss&quot;" sourceType="TIMESTAMP" type="id_Date" usefulColumn="true"/>
+    </metadata>
+  </node>
+  <node componentName="tMap" componentVersion="2.1" offsetLabelX="0" offsetLabelY="0" posX="320" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tMap_1" show="false"/>
+    <elementParameter field="EXTERNAL" name="MAP" value=""/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <metadata connector="FLOW" name="discrepancy_report">
+      <column comment="" key="false" length="20" name="PAYMENT_ID" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="20" name="LOAN_ID" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="12" name="CUSTOMER_ID" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="PAYMENT_AMOUNT" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="AMOUNT_DUE" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="VARIANCE" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="15" name="DISCREPANCY_TYPE" nullable="false" type="id_String" usefulColumn="true"/>
+      <column comment="" key="false" length="10" name="REPORT_DATE" nullable="false" type="id_String" usefulColumn="true"/>
+    </metadata>
+    <nodeData xsi:type="TalendMapper:MapperData">
+      <uiProperties shellMaximized="true"/>
+      <varTables sizeState="INTERMEDIATE" name="Var" minimized="true"/>
+      <outputTables sizeState="INTERMEDIATE" name="discrepancy_report">
+        <mapperTableEntries name="PAYMENT_ID" expression="row1.PAYMENT_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="LOAN_ID" expression="row1.LOAN_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="CUSTOMER_ID" expression="row1.CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="PAYMENT_AMOUNT" expression="AmountUtils.formatCurrency(row1.PAYMENT_AMOUNT)" type="id_String" nullable="false"/>
+        <mapperTableEntries name="AMOUNT_DUE" expression="AmountUtils.formatCurrency(row1.AMOUNT_DUE)" type="id_String" nullable="false"/>
+        <mapperTableEntries name="VARIANCE" expression="AmountUtils.formatCurrency(row1.VARIANCE)" type="id_String" nullable="false"/>
+        <mapperTableEntries name="DISCREPANCY_TYPE" expression="row1.MATCH_STATUS" type="id_String" nullable="false"/>
+        <mapperTableEntries name="REPORT_DATE" expression="context.report_date" type="id_String" nullable="false"/>
+      </outputTables>
+      <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
+        <mapperTableEntries name="PAYMENT_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="LOAN_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="CUSTOMER_ID" type="id_String" nullable="false"/>
+        <mapperTableEntries name="PAYMENT_AMOUNT" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="AMOUNT_DUE" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="VARIANCE" type="id_Double" nullable="false"/>
+        <mapperTableEntries name="MATCH_STATUS" type="id_String" nullable="false"/>
+        <mapperTableEntries name="RECONCILED_AT" type="id_Date" nullable="false"/>
+      </inputTables>
+    </nodeData>
+  </node>
+  <node componentName="tFileOutputDelimited" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="544" posY="96">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tFileOutputDelimited_1" show="false"/>
+    <elementParameter field="FILE" name="FILENAME" value="context.output_dir + &quot;discrepancy_report_&quot; + context.report_date + &quot;.csv&quot;"/>
+    <elementParameter field="TEXT" name="ROWSEPARATOR" value="&quot;\n&quot;"/>
+    <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;,&quot;"/>
+    <elementParameter field="CHECK" name="CSV_OPTION" value="true"/>
+    <elementParameter field="TEXT" name="ESCAPE_CHAR" value="&quot;\&quot;&quot;"/>
+    <elementParameter field="TEXT" name="TEXT_ENCLOSURE" value="&quot;\&quot;&quot;"/>
+    <elementParameter field="CHECK" name="INCLUDEHEADER" value="true"/>
+    <elementParameter field="CHECK" name="APPEND" value="false"/>
+    <elementParameter field="ENCODING_TYPE" name="ENCODING" value="&quot;UTF-8&quot;"/>
+    <elementParameter field="TEXT" name="LABEL" value="&quot;Discrepancy CSV&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+  </node>
+  <connection connectorName="FLOW" label="row1" lineStyle="0" metaname="tDBInput_1" offsetLabelX="0" offsetLabelY="0" source="tDBInput_1" target="tMap_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="row1" show="false"/>
+  </connection>
+  <connection connectorName="FLOW" label="discrepancy_report" lineStyle="0" metaname="discrepancy_report" offsetLabelX="0" offsetLabelY="0" source="tMap_1" target="tFileOutputDelimited_1">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="discrepancy_report" show="false"/>
+  </connection>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tDBInput_1" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="92;131;150" show="false"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="207;226;236"/>
+  </subjob>
+</talendfile:ProcessType>

@@ -42,13 +42,20 @@ def run(session: Session, config: dict) -> int:
     row_count = df_out.count()
     df_out.write.mode("append").save_as_table("PAYMENT_SETTLEMENT")
 
+    # Mark settled in PAYMENT_RECONCILIATION to prevent re-processing
+    session.sql("""
+        UPDATE PAYMENT_RECONCILIATION
+        SET SETTLEMENT_STATUS = 'SETTLED'
+        WHERE MATCH_STATUS = 'MATCHED' AND SETTLEMENT_STATUS IS NULL
+    """).collect()
+
     # Mark reconciled in source (replaces tDBRow per-row UPDATE)
     session.sql("""
         MERGE INTO INCOMING_PAYMENTS tgt
         USING (
             SELECT PAYMENT_ID
             FROM PAYMENT_RECONCILIATION
-            WHERE MATCH_STATUS = 'MATCHED' AND SETTLEMENT_STATUS IS NULL
+            WHERE MATCH_STATUS = 'MATCHED' AND SETTLEMENT_STATUS = 'SETTLED'
         ) src
         ON tgt.PAYMENT_ID = src.PAYMENT_ID
         WHEN MATCHED THEN UPDATE SET
